@@ -1,0 +1,142 @@
+import { useState } from 'react'
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native'
+
+import logo from '../../assets/logo.png'
+
+const loginApi = 'http://localhost:3000/login'
+
+export default function Login() {
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+
+    const handleCredentials = async () => {
+        const jsonData = {
+            email: email,
+            password: password,
+        };
+
+        try {
+            const response = await fetch(loginApi, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(jsonData)
+            })
+
+            if (!response.ok) {
+                throw new Error('Error en la respuesta de la API')
+            }
+
+            const data = await response.json()
+            console.log('Login successful', data)
+        } catch {
+            console.error('Error durante el login:', error);
+        }
+    }
+
+    return (
+        <View style={style.container}>
+            
+
+            {/* Logo */}
+            <Image source={logo} style={style.logo} />
+
+            {/* Title and subtitle */}
+            <Text style={style.title}>Sign in SSChat</Text>
+            <Text style={style.subtitle}>Access to your account at SSChat</Text>
+
+            {/* Form */}
+            <View style={style.inputContainer}>
+
+                {/* Mail */}
+                <Text style={style.bold}>Email address</Text>
+                <TextInput
+                style={style.input}
+                placeholder="example@example.com"
+                placeholderTextColor="gray"
+                onChangeText={setEmail}
+                />
+
+                {/* Password */}
+                <Text style={style.bold}>Password</Text>
+                <TextInput
+                style={style.input}
+                placeholder="**********"
+                placeholderTextColor="gray"
+                secureTextEntry={true}
+                onChangeText={setPassword}
+                />
+
+                {/* Sign button */}
+                <TouchableOpacity onPress={handleCredentials}>
+                    <View style={style.btn}>
+                        <Text style={[style.bold, style.white]}>Sign in</Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
+
+            {/* Sign in */}
+            
+
+        </View>
+    )
+}
+
+const style = StyleSheet.create({
+    container: {
+        alignItems: 'center',
+        flex: 1,
+        marginTop: 100
+    },
+    logo: {
+        width: 100,
+        height: 100,
+        margin: 30,
+        borderRadius: 20,
+        backgroundColor: 'white'
+    },
+    title: {
+        fontSize: 30,
+        fontWeight: 'bold',
+    },
+    bold: {
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+    subtitle: {
+
+    },
+    inputContainer: {
+        width: 350,
+        marginTop: 25,
+    },
+    input: {
+        width: '100%',
+        height: 50,
+        marginTop: 5,
+        marginBottom: 15,
+
+        padding: 10,
+
+        borderRadius: 10,
+
+        fontSize: 15,
+        color: 'black',
+        backgroundColor: 'white',
+    },
+    btn: {
+        marginTop: 20,
+        width: '100%',
+        paddingVertical: 10,
+        paddingHorizontal: 10,
+        
+        borderRadius: 10,
+
+        alignItems: 'center',
+        backgroundColor: '#2592ff'
+    },
+    white: {
+        color: 'white'
+    }
+})
