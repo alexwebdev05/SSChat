@@ -7,6 +7,9 @@ const router = Router();
 // [ USER ROUTES ]
 
 // create user
-router.post('/', UserController.create);
+router.post('/createuser', UserController.create);
+
+// Check user
+router.post('/checkuser', UserController.checkuser)
 
 export default router;

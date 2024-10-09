@@ -17,7 +17,7 @@
         "@types/express": "^5.0.0",
         "@types/node": "latest",
         "@types/pg": "^8.11.10",
-        "nodemon": "latest",
+        "nodemon": "^3.1.7",
         "prettier": "latest",
         "prettify": "^0.1.0",
         "ts-node": "latest",
