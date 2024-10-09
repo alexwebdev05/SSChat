@@ -1,44 +1,50 @@
-import { Client } from 'pg';
 import { IUser } from "../interfaces/user.interface";
 
-import env from '../conf/env'
 import { dbConnect } from '../conf/db';
 
-
-class UserModel {
+export class UserModel {
 
     // Modify data
-    async create(userData: Omit<IUser, 'id'>): Promise<IUser> {
+    static async create(userData: Omit<IUser, 'id'>): Promise<IUser> {
         const { username, email, password } = userData;
 
         const client = await dbConnect();
+        try {
+            const result = await client.query<IUser>(
+                'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *',
+                [username, email, password]
+            );
+            return result.rows[0]
 
-        const result = await client.query<IUser>(
-            'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *',
-            [username, email, password]
-        );
+        } catch(error) {
+            console.log(error)
+            throw new error
+        } finally {
+            await client.end();
+        }
+        
 
-        return result.rows[0]
-    }
-
-    async update() {
         
     }
 
-    async delete() {
+    static async update() {
+        
+    }
+
+    static async delete() {
         
     }
 
     // Manage data
-    async getAll() {
+    static async getAll() {
         
     }
 
-    async getOne() {
+    static async getOne() {
         
     }
 
-    async getImg() {
+    static async getImg() {
         
     }
 
