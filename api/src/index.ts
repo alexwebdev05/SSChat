@@ -2,13 +2,12 @@ import express, { Application, Request, Response } from 'express';
 import { json } from 'body-parser';
 import userRoutes from './routes/user.routes'; // Asegúrate de que la ruta sea correcta
 import { dbConnect } from './conf/db'; // Importa tu función de conexión a la base de datos (si es necesaria)
-import cors from 'cors';
+import env from './conf/env';
 
 const app: Application = express();
-const PORT = process.env.PORT || 3000;
+const PORT = env.PORT || 3000;
 
 // Middleware
-app.use(cors()); // Para permitir solicitudes de diferentes orígenes (CORS)
 app.use(json()); // Para analizar el cuerpo de las solicitudes en formato JSON
 
 // Conectar a la base de datos (opcional, si es necesario)

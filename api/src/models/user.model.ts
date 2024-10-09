@@ -18,7 +18,7 @@ export class UserModel {
 
         } catch(error) {
             console.log(error)
-            throw new error
+            throw error
         } finally {
             await client.end();
         }
