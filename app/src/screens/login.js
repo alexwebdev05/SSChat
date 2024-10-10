@@ -1,18 +1,18 @@
-import { useState } from 'react'
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native'
+import { useState } from 'react';
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
+import logo from '../../assets/logo.png';
 
-import logo from '../../assets/logo.png'
+const loginApi = 'http://192.168.1.33:3000/api/users/checkuser/';
 
-const loginApi = 'http://localhost:3000/login'
-
-export default function Login() {
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+export default function Login({ onLogin }) {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
     const handleCredentials = async () => {
         const jsonData = {
-            email: email,
-            password: password,
+            "email": email,
+            "password": password,
         };
 
         try {
@@ -21,23 +21,27 @@ export default function Login() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(jsonData)
-            })
+                body: JSON.stringify(jsonData),
+            });
 
             if (!response.ok) {
-                throw new Error('Error en la respuesta de la API')
+                throw new Error('Error en la respuesta de la API');
             }
 
-            const data = await response.json()
-            console.log('Login successful', data)
-        } catch {
+            const data = await response.json();
+            console.log('Login successful', data);
+
+
+            onLogin();
+
+        } catch (error) {
             console.error('Error durante el login:', error);
         }
-    }
+    };
 
     return (
         <View style={style.container}>
-            
+            <StatusBar style="auto" />
 
             {/* Logo */}
             <Image source={logo} style={style.logo} />
@@ -48,24 +52,23 @@ export default function Login() {
 
             {/* Form */}
             <View style={style.inputContainer}>
-
                 {/* Mail */}
                 <Text style={style.bold}>Email address</Text>
                 <TextInput
-                style={style.input}
-                placeholder="example@example.com"
-                placeholderTextColor="gray"
-                onChangeText={setEmail}
+                    style={style.input}
+                    placeholder="example@example.com"
+                    placeholderTextColor="gray"
+                    onChangeText={setEmail}
                 />
 
                 {/* Password */}
                 <Text style={style.bold}>Password</Text>
                 <TextInput
-                style={style.input}
-                placeholder="**********"
-                placeholderTextColor="gray"
-                secureTextEntry={true}
-                onChangeText={setPassword}
+                    style={style.input}
+                    placeholder="**********"
+                    placeholderTextColor="gray"
+                    secureTextEntry={true}
+                    onChangeText={setPassword}
                 />
 
                 {/* Sign button */}
@@ -75,12 +78,8 @@ export default function Login() {
                     </View>
                 </TouchableOpacity>
             </View>
-
-            {/* Sign in */}
-            
-
         </View>
-    )
+    );
 }
 
 const style = StyleSheet.create({
@@ -105,7 +104,7 @@ const style = StyleSheet.create({
         fontWeight: 'bold',
     },
     subtitle: {
-
+        marginBottom: 20,
     },
     inputContainer: {
         width: 350,
@@ -116,11 +115,8 @@ const style = StyleSheet.create({
         height: 50,
         marginTop: 5,
         marginBottom: 15,
-
         padding: 10,
-
         borderRadius: 10,
-
         fontSize: 15,
         color: 'black',
         backgroundColor: 'white',
@@ -130,13 +126,11 @@ const style = StyleSheet.create({
         width: '100%',
         paddingVertical: 10,
         paddingHorizontal: 10,
-        
         borderRadius: 10,
-
         alignItems: 'center',
         backgroundColor: '#2592ff'
     },
     white: {
         color: 'white'
     }
-})
+});
