@@ -16,7 +16,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Routes
-app.use('/api/users', router);
+app.use('/api', router);
 
 
 // Starts the server

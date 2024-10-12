@@ -7,9 +7,12 @@ const router = Router();
 // [ USER ROUTES ]
 
 // create user
-router.post('/createuser', UserController.create);
+router.post('/users/createuser', UserController.create);
 
 // Check user
-router.post('/checkuser', UserController.checkuser)
+router.post('/users/checkuser', UserController.checkuser)
+
+// New chat
+router.post('/chats/newchat', UserController.newchat)
 
 export default router;

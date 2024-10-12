@@ -2,12 +2,22 @@ import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
 import logo from '../../assets/logo.png';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const loginApi = 'http://192.168.1.33:3000/api/users/checkuser/';
 
 export default function Login({ onLogin }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const storeUserData = async (userData) => {
+        try {
+            await AsyncStorage.setItem('userData', JSON.stringify(userData));
+            console.log('User data saved locally');
+        } catch (error) {
+            console.error('Error saving user data', error);
+        }
+    };
 
     const handleCredentials = async () => {
         const jsonData = {
@@ -30,7 +40,12 @@ export default function Login({ onLogin }) {
 
             const data = await response.json();
             console.log('Login successful', data);
-
+            
+            const storeData = {
+                "username": data.user,
+                "email": email
+            }
+            storeUserData(storeData);
 
             onLogin();
 
