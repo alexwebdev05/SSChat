@@ -5,16 +5,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { StatusBar  } from 'expo-status-bar';
 
+// UI
+import { Inbox } from '../ui/inbox';
+import { ChatMaker } from '../ui/charMaker';
+
 // Icons
 import options from '../../assets/icons/options.png'
-import plus from '../../assets/icons/plus.png'
-
-const chatApi = 'http://192.168.1.33:3000/api/chats/newchat/'
 
 export default function Main() {
-    const [username, setUsername] = useState('');
 
-    const [isNewChatVisible, setIsNewChatVisible] = useState(false);
     const [isOptionMenuVisible, setIsOptionMenuVisible] = useState(false)
 
     useEffect(() => {
@@ -27,47 +26,6 @@ export default function Main() {
         } else {
             setIsOptionMenuVisible(true)
         }
-      }
-
-      const plusHandle = async () => {
-        setIsNewChatVisible(true);
-      }
-
-      const prueba = async () => {
-        const localData = await AsyncStorage.getItem('userData')
-        const userData = JSON.parse(localData)
-        const user1 = userData.username
-        console.log(user1)
-      }
-      
-      const newUser = async () => {
-        const localData = await AsyncStorage.getItem('userData')
-        const userData = JSON.parse(localData)
-        const user1 = JSON.stringify(userData.username)
-
-        const jsonData = {
-            "user1": userData.username,
-            "user2": username
-        };
-
-        try {
-            const response = await fetch(chatApi, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(jsonData),
-            });
-
-            if (!response.ok) {
-                throw new Error('Error en la respuesta de la API');
-            }
-
-        } catch(error) {
-            console.log('[ CLIENT ] Error settin new chat: ', error);
-            throw error
-        }
-        setIsNewChatVisible(false);
       }
 
       const logOut = async () => {
@@ -113,35 +71,11 @@ export default function Main() {
                 </View>
 
                 {/* Chats */}
-                <View style={style.chatContainer}>
-                    <Text>Chats</Text>
-                </View>
+                <Inbox />
             </View>
             
             {/* Plus button */}
-            <TouchableOpacity onPress={plusHandle} style={style.plusContainer}>
-                <Image source={plus} style={style.plusIcon}></Image>
-            </TouchableOpacity>
-
-            {/* New Chat */}
-            {isNewChatVisible && (
-            <View style={style.newChatContainer}>
-                <Text>New Chat</Text>
-                <View style={style.inputEnter}>
-                    <TextInput
-                    placeholder="recipient username"
-                    placeholderTextColor="gray"
-                    onChangeText={setUsername}
-                    style={style.newChatInput}
-                    ></TextInput>
-
-                    <TouchableOpacity onPress={newUser} onChangeText={setUsername} style={style.newChatButton}>
-                        <Text style={style.newChatButtonText}>Start</Text>
-                    </TouchableOpacity>
-
-                </View>
-            </View>
-            )}
+            <ChatMaker />
 
         </View>
     )
@@ -210,65 +144,5 @@ const style = StyleSheet.create({
         borderRadius: 20,
 
         backgroundColor: 'white',
-    },
-
-    // Chats
-    chatContainer: {
-        height: '100%',
-        padding: 10,
-        borderRadius: 20,
-        marginVertical: 15,
-
-        backgroundColor: 'white'
-    },
-    // Plus button
-    plusContainer: {
-        position: 'absolute',
-        bottom: 40,
-        right: 40,
-        padding: 15,
-        borderRadius: 15,
-        backgroundColor: '#5eb1ff'
-    },
-    plusIcon: {
-        width: 40,
-        height: 40,
-    },
-    // New chat
-    newChatContainer: {
-        display: 'auto',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(90, 177, 255, 0.5)'
-    },
-    newChatInput: {
-        height: 50,
-        marginTop: 10,
-        paddingHorizontal: 20,
-        borderRadius: 15,
-        backgroundColor: 'white'
-    },
-    newChatButton: {
-        marginTop: 10,
-        height: 50,
-        width: 50,
-        borderRadius: 15,
-        marginLeft: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#5eb1ff'
-    },
-    newChatButtonText: {
-        fontWeight: 'bold',
-        color: 'white'
-    },
-    inputEnter: {
-        flexDirection: 'row',
-        alignItems: 'center'
     }
 })

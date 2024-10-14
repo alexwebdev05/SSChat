@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import { UserController } from '../controllers/user.controller';
+import { ChatController } from '../controllers/chat.controller';
 
 const router = Router();
 
@@ -13,6 +14,6 @@ router.post('/users/createuser', UserController.create);
 router.post('/users/checkuser', UserController.checkuser)
 
 // New chat
-router.post('/chats/newchat', UserController.newchat)
+router.post('/chats/newchat', ChatController.newchat)
 
 export default router;
