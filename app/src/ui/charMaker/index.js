@@ -34,7 +34,7 @@ export const ChatMaker = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error en la respuesta de la API');
+                throw new Error('The api do not respond');
             }
 
         } catch(error) {

@@ -25,7 +25,27 @@ export class ChatModel {
             console.log('[ SERVER ] Failed to create new chat at model: ' + error)
             throw error
         } finally {
-            await client.end(); // Libera el cliente después de usarlo
+            await client.end();
+        }
+    }
+
+    static async getChats(data: Omit<IChat, 'id'> & {user: string}) {
+        const client = await dbConnect();
+
+        try {
+            const username = data.user; 
+            const response = await client.query(
+                'SELECT * FROM chats WHERE user1 = $1 OR user2 = $2',
+                [username, username]
+            )
+            if (response.rows.length === 0) {
+                throw new Error('No rows returned from query');
+            }
+            return response.rows;
+        } catch(error) {
+            console.log('[ SERVER ] Failed to get chats at model: ' + error)
+        } finally {
+            await client.end();
         }
     }
 

@@ -18,5 +18,15 @@ export class ChatController {
         }
     }
 
+    static async getchats(req: Request, res: Response): Promise<void> {
+        try {
+            const data = req.body
+            const chatsData = await ChatModel.getChats(data);
+            res.status(201).json(chatsData)
+        } catch(error) {
+            console.log('[ SERVER ] Error getting chats at controller: ', error)
+        }
+    }
+
 
 }

@@ -50,7 +50,7 @@ export default function Login({ onLogin }) {
             onLogin();
 
         } catch (error) {
-            console.error('Error durante el login:', error);
+            console.error('Error during the loggin:', error);
         }
     };
 
