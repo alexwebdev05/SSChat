@@ -13,7 +13,11 @@ export const ChatMaker = () => {
 
     const plusHandle = async () => {
         setIsNewChatVisible(true);
-      }
+    }
+
+    const returnHandler = async () => {
+        setIsNewChatVisible(false);
+    }
 
     const newUser = async () => {
         const localData = await AsyncStorage.getItem('userData')
@@ -67,6 +71,8 @@ export const ChatMaker = () => {
                     </TouchableOpacity>
 
                 </View>
+                {/* Returner */}
+                <TouchableOpacity onPress={returnHandler} style={style.returnHandler} />
             </View>
             )}
         </View>
@@ -128,5 +134,15 @@ const style = StyleSheet.create({
     inputEnter: {
         flexDirection: 'row',
         alignItems: 'center'
+    },
+    returnHandler: {
+        width: 20,
+        height: 20,
+        position: "absolute",
+        left: 0,
+        top: 0,
+        width: "100%",
+        height: "100%",
+        zIndex: -1,
     }
 })

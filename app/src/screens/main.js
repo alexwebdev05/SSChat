@@ -7,7 +7,7 @@ import { StatusBar  } from 'expo-status-bar';
 
 // UI
 import { Inbox } from '../ui/inbox';
-import { ChatMaker } from '../ui/charMaker';
+import { ChatMaker } from '../ui/chatMaker';
 
 // Icons
 import options from '../../assets/icons/options.png'
@@ -26,6 +26,10 @@ export default function Main() {
         } else {
             setIsOptionMenuVisible(true)
         }
+      }
+
+      const returnHandler = () => {
+        setIsOptionMenuVisible(false)
       }
 
       const logOut = async () => {
@@ -56,12 +60,20 @@ export default function Main() {
                             <TouchableOpacity onPress={logOut}>
                                 <Text>Log out</Text>
                             </TouchableOpacity>
-                            
+
                         </View>
+                        
                     )}
+                    
                 </View>
                 
+                
             </View>
+            
+            {/* Return */}
+            {isOptionMenuVisible && (
+                <TouchableOpacity onPress={returnHandler} style={style.returnHandler} />
+            )}
 
             {/* Search and chat */}
             <View style={style.searchChatContainer}>
@@ -144,5 +156,18 @@ const style = StyleSheet.create({
         borderRadius: 20,
 
         backgroundColor: 'white',
+    },
+
+    // Return
+    returnHandler: {
+        width: 20,
+        height: 20,
+        position: "absolute",
+        left: 0,
+        top: 0,
+        width: "100%",
+        height: "100%",
+        zIndex: 1,
+        // backgroundColor: "black"
     }
 })

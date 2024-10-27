@@ -9,14 +9,18 @@ export const Inbox = () => {
     const [localUser, setLocalUser] = useState('')
     // useEffects
     useEffect(() => {
-        chats();
+
+        if (!localUser) {
+            console.log("Loading localUser...")
+        }
 
         const interval = setInterval(() => {
             chats();
         }, 5000);
-            
+               
         return () => clearInterval(interval)
-    }, [])
+        
+    }, [localUser])
 
     useEffect(() => {
         console.log(chatContent); // Imprime el contenido del chat cada vez que cambia
@@ -31,6 +35,8 @@ export const Inbox = () => {
     getLocalUser()
 
     const chats = async () => {
+
+        
         try {
             const response = await fetch(apiChats, {
                 method: 'POST',
@@ -42,10 +48,12 @@ export const Inbox = () => {
 
             if (!response.ok) {
                 throw new Error('The api do not response');
+            } else {
+                const responseData = await response.json();
+                setChatContent(responseData)
             }
 
-            const responseData = await response.json();
-            setChatContent(responseData)
+            
 
         } catch (error) {
             console.error('Error getting the chats: ', error);
