@@ -3,8 +3,7 @@ import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'reac
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import plus from '../../../assets/icons/plus.png'
-
-const chatApi = 'http://192.168.1.33:3000/api/chats/newchat/'
+import { api } from '../../api/connection';
 
 export const ChatMaker = () => {
     const [username, setUsername] = useState('');
@@ -29,7 +28,7 @@ export const ChatMaker = () => {
         };
 
         try {
-            const response = await fetch(chatApi, {
+            const response = await fetch(api.newChat, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

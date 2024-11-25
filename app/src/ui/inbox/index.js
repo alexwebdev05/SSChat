@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const apiChats = 'http://192.168.1.33:3000/api/chats/getchats/'
+import { api } from '../../api/connection';
 
 export const Inbox = () => {
     const [chatContent, setChatContent] = useState([])
@@ -38,7 +37,7 @@ export const Inbox = () => {
 
         
         try {
-            const response = await fetch(apiChats, {
+            const response = await fetch(api.getChats, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

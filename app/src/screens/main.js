@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Platform, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
 import * as NavigationBar from 'expo-navigation-bar';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { StatusBar  } from 'expo-status-bar';
 
 // UI
 import { Inbox } from '../ui/inbox';
 import { ChatMaker } from '../ui/chatMaker';
+
+// Utils
+import { logOut } from '../utils/logout';
 
 // Icons
 import options from '../../assets/icons/options.png'
@@ -32,16 +34,6 @@ export default function Main() {
         setIsOptionMenuVisible(false)
       }
 
-      const logOut = async () => {
-        try {
-            await AsyncStorage.clear();
-            console.log('Logged out')
-            setData(null);
-        } catch(error) {
-            console.log('error logging out: ', error)
-        }
-      }
-
     return (
         <View style={style.container}>
             <StatusBar barStyle="auto" />
@@ -55,19 +47,15 @@ export default function Main() {
                         <Image source={options} style={style.optionIcon}></Image>
                     </TouchableOpacity>
                     
+                    {/* Log Out */}
                     {isOptionMenuVisible && (
                         <View style={style.optionButtons}>
                             <TouchableOpacity onPress={logOut}>
                                 <Text>Log out</Text>
                             </TouchableOpacity>
-
                         </View>
-                        
                     )}
-                    
-                </View>
-                
-                
+                </View>  
             </View>
             
             {/* Return */}
@@ -139,7 +127,8 @@ const style = StyleSheet.create({
         width: 80,
         padding: 10,
         alignItems: 'flex-end',
-        backgroundColor: '#5eb1ff'
+        backgroundColor: '#5eb1ff',
+        zIndex: 99
     },
     
     // Search and chat
@@ -168,6 +157,5 @@ const style = StyleSheet.create({
         width: "100%",
         height: "100%",
         zIndex: 1,
-        // backgroundColor: "black"
     }
 })

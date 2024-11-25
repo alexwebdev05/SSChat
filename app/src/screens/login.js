@@ -3,8 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
 import logo from '../../assets/logo.png';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const loginApi = 'http://192.168.1.33:3000/api/users/checkuser/';
+import { api } from '../api/connection';
 
 export default function Login({ onLogin }) {
     const [email, setEmail] = useState('');
@@ -26,7 +25,7 @@ export default function Login({ onLogin }) {
         };
 
         try {
-            const response = await fetch(loginApi, {
+            const response = await fetch(api.chaeckUsers, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
