@@ -1,7 +1,6 @@
 // React dependencies
 import { StyleSheet, View, Text } from 'react-native';
 
-
 // Theme
 import generalColors from '../../styles/generalColors';
 
@@ -9,7 +8,7 @@ export default function Header() {
     return (
         
             <View style={style.container}>
-                    <Text style={style.title}>SSChat</Text>
+                <Text style={style.title}>SSChat</Text>
             </View>
         
     )
@@ -22,9 +21,10 @@ const style = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-end',
         paddingBottom: 15,
+
     },
     title: {
-        width: '100%',
+
         fontSize: 20,
         fontWeight: 800,
         backgroundColor: 'white'

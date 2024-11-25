@@ -7,8 +7,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Login from './src/screens/login';
 import Main from './src/screens/main'
 
-import TestingMain from './src/screens/mainTesting'
-
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(null);
 
@@ -51,8 +49,7 @@ export default function App() {
     return <Login onLogin={handleLogin} />;
   } else {
     return (
-      //<Main />
-      <TestingMain />
+      <Main />
     );
   }
 }
