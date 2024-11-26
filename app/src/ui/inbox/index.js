@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from '../../api/connection';
+
+// Libraries
+
 
 // Theme
 import generalColors from '../../styles/generalColors';
@@ -85,13 +88,18 @@ export const Inbox = () => {
 
             {Object.keys(groupChats()).map((user) => (
                 <View key={user} style={style.chatContainer}>
-                    <Text style={style.chatGroupHeader}>{user}</Text>
+                    <Image source={require('app/assets/icons/profile.png')} style={{width: 55, height: 55, marginRight: 10}}>
 
-                    <FlatList
-                        data={groupChats()[user]}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={renderChatItem}
-                    />
+                    </Image>
+                    <View>
+                        <Text style={style.chatGroupHeader}>{user}</Text>
+
+                        {/* <FlatList
+                            data={groupChats()[user]}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={renderChatItem}
+                        /> */}
+                    </View>
                 </View>
             ))}
         </View>
@@ -123,8 +131,10 @@ const style = StyleSheet.create({
         width: '100%',
         padding: 10,
         backgroundColor: generalColors.chats,
-        borderRadius: 10,
+        borderRadius: 15,
         marginBottom: 10,
+        flexDirection: 'row',
+        alignItems: 'center'
     },
     chatItem: {
         fontSize: 14,

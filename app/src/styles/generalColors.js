@@ -6,7 +6,7 @@ export default generalColors = {
 
     // Secundary
     shadow: '#000',
-    chats: '#e3e3e3',
+    chats: '#e8e8e8',
     // Texts
 
 }
