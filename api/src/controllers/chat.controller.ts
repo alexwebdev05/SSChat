@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { IChat } from '../interfaces/user.interface';
+import { IChat } from '../interfaces/interfaces';
 
 import { ChatModel } from '../models/chat.model';
 
@@ -18,6 +18,7 @@ export class ChatController {
         }
     }
 
+    // Get chats
     static async getchats(req: Request, res: Response): Promise<void> {
         try {
             const data = req.body

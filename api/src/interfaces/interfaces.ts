@@ -12,3 +12,11 @@ export interface IChat {
     user2: Text,
     created_at?: EpochTimeStamp
 }
+
+export interface IMessage {
+    id?: number,
+    sender: Text,
+    receiver: Text,
+    message: Text,
+    created_at?: EpochTimeStamp
+}

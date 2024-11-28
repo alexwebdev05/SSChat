@@ -1,4 +1,4 @@
-import { IChat } from "../interfaces/user.interface";
+import { IChat } from "../interfaces/interfaces";
 
 import { dbConnect } from '../conf/db';
 

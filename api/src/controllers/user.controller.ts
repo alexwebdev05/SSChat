@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { IUser, IChat } from '../interfaces/user.interface';
+import { IUser, IChat } from '../interfaces/interfaces';
 
 import { UserModel } from '../models/user.model';
 
