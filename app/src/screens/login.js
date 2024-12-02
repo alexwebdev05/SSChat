@@ -5,7 +5,7 @@ import logo from '../../assets/logo.png';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from '../api/connection';
 
-export default function Login({ onLogin }) {
+export default function Login({ onLogin, navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 

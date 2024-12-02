@@ -15,7 +15,7 @@ import { ChatMaker } from '../ui/chatMaker/index'
 // Utils
 import { logOut } from '../utils/logout';
 
-export default function Main() {
+export default function Main({ navigation }) {
 
     const [isOptionMenuVisible, setIsOptionMenuVisible] = useState(false)
 
