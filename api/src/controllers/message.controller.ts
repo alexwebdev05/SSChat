@@ -10,7 +10,7 @@ export class MessageController {
     // Get messages
     static async getmessages(req: Request, res: Response): Promise<void> {
         try {
-            const data: IMessage = req.body
+            const data = req.body
             const messageData = await MessageModel.getMessages(data)
             res.status(201).json(messageData)
         } catch(error) {
