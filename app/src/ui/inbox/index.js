@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, FlatList, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from '../../api/connection';
+import { useNavigation } from '@react-navigation/native';
 
 // Libraries
 
@@ -12,6 +13,8 @@ import generalColors from '../../styles/generalColors';
 export const Inbox = () => {
     const [chatContent, setChatContent] = useState([]);
     const [localUser, setLocalUser] = useState('');
+
+    const navigation = useNavigation();
 
     // useEffect to load local user data
     useEffect(() => {
@@ -83,11 +86,15 @@ export const Inbox = () => {
         );
     };
 
+    const handleNavigation = () => {
+        navigation.navigate('Chat');
+    };
+
     return (
         <View style={style.container}>
 
             {Object.keys(groupChats()).map((user) => (
-                <View key={user} style={style.chatContainer}>
+                <TouchableOpacity onPress={handleNavigation} key={user} style={style.chatContainer}>
                     <Image source={require('app/assets/icons/profile.png')} style={{width: 55, height: 55, marginRight: 10}}>
 
                     </Image>
@@ -100,7 +107,7 @@ export const Inbox = () => {
                             renderItem={renderChatItem}
                         /> */}
                     </View>
-                </View>
+                </TouchableOpacity>
             ))}
         </View>
     );

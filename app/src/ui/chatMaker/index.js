@@ -47,10 +47,6 @@ export const ChatMaker = () => {
         setIsNewChatVisible(false);
       }
 
-    //   const goChat = () => {
-
-    //   }
-
     return(
         <View style={style.container}>
 
@@ -59,7 +55,7 @@ export const ChatMaker = () => {
             </TouchableOpacity>
 
             {isNewChatVisible && (
-            <TouchableOpacity  style={style.newChatContainer}>
+            <View  style={style.newChatContainer}>
                 <Text>New Chat</Text>
                 <View style={style.inputEnter}>
                     <TextInput
@@ -76,7 +72,7 @@ export const ChatMaker = () => {
                 </View>
                 {/* Returner */}
                 <TouchableOpacity onPress={returnHandler} style={style.returnHandler} />
-            </TouchableOpacity>
+            </View>
             )}
         </View>
     )

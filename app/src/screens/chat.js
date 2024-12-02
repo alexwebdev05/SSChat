@@ -8,7 +8,7 @@ export default function Chat({ navigation }) {
 
     return (
         <View>
-            Chat
+            <Text>chat</Text>
         </View>
     )
 
