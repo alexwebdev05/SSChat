@@ -52,7 +52,6 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-      initialRouteName="Main"
       screenOptions={{
         headerShown: false, // Oculta el header para todas las pantallas
       }}

@@ -32,7 +32,7 @@ export const Inbox = () => {
 
         const interval = setInterval(() => {
             chats();
-        }, 5000);
+        }, 2000);
 
         return () => clearInterval(interval); // Clean up interval
     }, [localUser]);
