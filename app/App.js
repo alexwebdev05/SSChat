@@ -1,3 +1,4 @@
+// react libraries
 import { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
@@ -10,26 +11,33 @@ import Login from './src/screens/login';
 import Main from './src/screens/main';
 import Chat from './src/screens/chat';
 
+// Navigation
 const Stack = createStackNavigator();
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(null);
 
-  // Función para verificar el estado de inicio de sesión
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
+
+  // ----- Functions -----
+
+  // Check login status
   const checkLoginStatus = async () => {
     try {
       const loggedStatus = await AsyncStorage.getItem('isLoggedIn');
-      setIsLoggedIn(loggedStatus === 'true'); // Si es "true", establece `true`, si no, `false`.
+      setIsLoggedIn(loggedStatus === 'true');
+
+      // Catch errors
     } catch (error) {
       console.log("Error checking login status: ", error);
     }
   };
 
-  useEffect(() => {
-    checkLoginStatus();
-  }, []);
+  
 
-  // Función para manejar el inicio de sesión
+  // Handle login tries
   const handleLogin = async () => {
     try {
       await AsyncStorage.setItem('isLoggedIn', 'true');
@@ -39,32 +47,25 @@ export default function App() {
     }
   };
 
-  // Mientras se verifica el estado de inicio de sesión
-  if (isLoggedIn === null) {
-    return (
-      <View style={styles.container}>
-        <StatusBar style="auto" />
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-
+  // ----- DOM -----
   return (
+
+    // Navigation screens
     <NavigationContainer>
       <Stack.Navigator
       screenOptions={{
-        headerShown: false, // Oculta el header para todas las pantallas
+        headerShown: false,
       }}
       >
         {isLoggedIn ? (
           <>
-            {/* Si está logueado, muestra Main y Chat */}
+            {/* If is logged in, show Main and Chat */}
             <Stack.Screen name="Main" component={Main} />
             <Stack.Screen name="Chat" component={Chat} />
           </>
         ) : (
           <>
-            {/* Si no está logueado, muestra Login */}
+            {/* If isn't logged ind, show Login */}
             <Stack.Screen name="Login">
               {() => <Login onLogin={handleLogin} />}
             </Stack.Screen>
@@ -75,6 +76,7 @@ export default function App() {
   );
 }
 
+// ----- Styles -----
 const styles = StyleSheet.create({
   container: {
     flex: 1,

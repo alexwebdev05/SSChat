@@ -1,11 +1,11 @@
+// react libraries
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { api } from '../../api/connection';
 import { useNavigation } from '@react-navigation/native';
 
-// Libraries
-
+// Api
+import { api } from '../../api/connection';
 
 // Theme
 import generalColors from '../../styles/generalColors';
@@ -16,7 +16,7 @@ export const Inbox = () => {
 
     const navigation = useNavigation();
 
-    // useEffect to load local user data
+    // Get local user data
     useEffect(() => {
         const getLocalUser = async () => {
             const localData = await AsyncStorage.getItem('userData');
@@ -26,20 +26,26 @@ export const Inbox = () => {
         getLocalUser();
     }, []);
 
-    // Fetch chats every 5 seconds if localUser is available
+    // Get chats from local user
     useEffect(() => {
-        if (!localUser) return; // If no localUser, don't fetch chats
+        if (!localUser) return;
 
+        // Get data every 2 seconds
         const interval = setInterval(() => {
             chats();
         }, 2000);
 
-        return () => clearInterval(interval); // Clean up interval
+        // Clear interval
+        return () => clearInterval(interval);
     }, [localUser]);
+
+    // ----- Functions -----
 
     // Fetch chats from API
     const chats = async () => {
         try {
+            
+            // Send data to api
             const response = await fetch(api.getChats, {
                 method: 'POST',
                 headers: {
@@ -48,12 +54,16 @@ export const Inbox = () => {
                 body: JSON.stringify({ user: localUser }),
             });
 
+            // Bad response
             if (!response.ok) {
                 throw new Error('API response failed');
             }
 
+            // Set obtained chats
             const responseData = await response.json();
-            setChatContent(responseData); // Set the fetched chats
+            setChatContent(responseData);
+
+            // Catch errors
         } catch (error) {
             console.error('Error fetching chats: ', error);
         }
@@ -75,44 +85,35 @@ export const Inbox = () => {
         return groupedChats;
     };
 
-    // Render each chat item
-    const renderChatItem = ({ item }) => {
-        const otherUser = item.user1 === localUser ? item.user2 : item.user1;
-
-        return (
-            <Text style={style.chatItem}>
-                {otherUser} at {new Date(item.created_at).toLocaleString()}
-            </Text>
-        );
-    };
-
+    // Navigate to Chat screen
     const handleNavigation = () => {
         navigation.navigate('Chat');
+        console.log()
     };
 
+    // ----- DOM -----
     return (
         <View style={style.container}>
 
+            {/* Dinamic chat */}
             {Object.keys(groupChats()).map((user) => (
                 <TouchableOpacity onPress={handleNavigation} key={user} style={style.chatContainer}>
-                    <Image source={require('app/assets/icons/profile.png')} style={{width: 55, height: 55, marginRight: 10}}>
 
-                    </Image>
+                    {/* User image */}
+                    <Image source={require('app/assets/icons/profile.png')} style={{width: 55, height: 55, marginRight: 10}} />
+
+                    {/* User name */}
                     <View>
                         <Text style={style.chatGroupHeader}>{user}</Text>
-
-                        {/* <FlatList
-                            data={groupChats()[user]}
-                            keyExtractor={(item, index) => index.toString()}
-                            renderItem={renderChatItem}
-                        /> */}
                     </View>
+
                 </TouchableOpacity>
             ))}
         </View>
     );
 };
 
+// ----- Styles -----
 const style = StyleSheet.create({
     container: {
         width: '100%',

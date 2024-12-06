@@ -15,27 +15,34 @@ import { ChatMaker } from '../ui/chatMaker/index'
 // Utils
 import { logOut } from '../utils/logout';
 
-export default function Main({ navigation }) {
+export default function Main() {
 
     const [isOptionMenuVisible, setIsOptionMenuVisible] = useState(false)
 
     // Navigation var transparent
     useEffect(() => {
-        NavigationBar.setBackgroundColorAsync(generalColors.main); // Hacer la barra de navegación transparente
+        NavigationBar.setBackgroundColorAsync(generalColors.main);
     }, []);
 
+    // ----- Functions -----
+
+    // Change menu visibility
     const showMenu = async () => {
+        // Make visible
         if (isOptionMenuVisible === true) {
             setIsOptionMenuVisible(false)
+        // Make transparent
         } else {
             setIsOptionMenuVisible(true)
         }
     }
 
+    // Make menu invisible
     const returnHandler = () => {
         setIsOptionMenuVisible(false)
     }
 
+    // ----- DOM -----
     return (
         <View style={style.screen}>
 
@@ -77,6 +84,7 @@ export default function Main({ navigation }) {
     )
 }
 
+// ----- Styles -----
 const style = StyleSheet.create({
     screen: {
         width: '100%',

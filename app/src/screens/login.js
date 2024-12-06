@@ -1,30 +1,34 @@
+// React libraries
 import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
-import logo from '../../assets/logo.png';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Api
 import { api } from '../api/connection';
 
-export default function Login({ onLogin, navigation }) {
+// Assets
+import logo from '../../assets/logo.png';
+
+
+export default function Login({ onLogin }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const storeUserData = async (userData) => {
-        try {
-            await AsyncStorage.setItem('userData', JSON.stringify(userData));
-            console.log('User data saved locally');
-        } catch (error) {
-            console.error('Error saving user data', error);
-        }
-    };
+    // ----- Functions -----
 
+    // Check the user and login
     const handleCredentials = async () => {
+
+        // Input data array
         const jsonData = {
             "email": email,
             "password": password,
         };
 
+        // Check data on the database
         try {
+            // Sen data to api
             const response = await fetch(api.chaeckUsers, {
                 method: 'POST',
                 headers: {
@@ -33,26 +37,46 @@ export default function Login({ onLogin, navigation }) {
                 body: JSON.stringify(jsonData),
             });
 
+            // Bad response
             if (!response.ok) {
                 throw new Error('Error en la respuesta de la API');
             }
 
+            // Login success
             const data = await response.json();
             console.log('Login successful', data);
             
+            // Make an array with user data
             const storeData = {
                 "username": data.user,
                 "email": email
             }
+
+            // Store data locally
             storeUserData(storeData);
 
+            // login function on /src/App.js named handleLogin
             onLogin();
 
+            // Catch erros
         } catch (error) {
             console.error('Error during the loggin:', error);
         }
     };
 
+    // Save data locally
+    const storeUserData = async (userData) => {
+        try {
+            // Saveing data
+            await AsyncStorage.setItem('userData', JSON.stringify(userData));
+            console.log('User data saved locally');
+            // catch errors
+        } catch (error) {
+            console.error('Error saving user data', error);
+        }
+    };
+
+    // ----- DOM -----
     return (
         <View style={style.container}>
             <StatusBar style="auto" />
@@ -87,7 +111,7 @@ export default function Login({ onLogin, navigation }) {
 
                 {/* Sign button */}
                 <TouchableOpacity onPress={handleCredentials}>
-                    <View style={style.btn}>
+                    <View style={style.button}>
                         <Text style={[style.bold, style.white]}>Sign in</Text>
                     </View>
                 </TouchableOpacity>
@@ -96,6 +120,7 @@ export default function Login({ onLogin, navigation }) {
     );
 }
 
+// ----- Styles -----
 const style = StyleSheet.create({
     container: {
         alignItems: 'center',
@@ -135,7 +160,7 @@ const style = StyleSheet.create({
         color: 'black',
         backgroundColor: 'white',
     },
-    btn: {
+    button: {
         marginTop: 20,
         width: '100%',
         paddingVertical: 10,

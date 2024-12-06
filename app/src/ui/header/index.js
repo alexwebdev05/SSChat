@@ -7,17 +7,16 @@ import { Shadow } from 'react-native-shadow-2';
 // Theme
 import generalColors from '../../styles/generalColors';
 
-const { width } = Dimensions.get('window');
-
 export default function Header() {
 
+    // ----- DOM -----
     return (
         
             <View style={style.container}>
                 <Shadow
-                startColor='#00000010'
-                endColor='#00000000'
-                distance={50}
+                startColor={generalColors.start}
+                endColor={generalColors.finish}
+                distance={30}
                 >
                     <View style={style.shadow}>
                         <Text style={style.title}>SSChat</Text>
@@ -28,13 +27,15 @@ export default function Header() {
     )
 }
 
+// ----- Styles -----
+const { width } = Dimensions.get('window');
+
 const style = StyleSheet.create({
     container: {
         width: width,
-        height: 120,
+        height: 105,
         alignItems: 'center',
         justifyContent: 'flex-end',
-        paddingBottom: 15,
         backgroundColor: 'white'
     },
     shadow: {

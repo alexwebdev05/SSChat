@@ -1,32 +1,45 @@
+// react libraries
 import { useState } from 'react';
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import plus from '../../../assets/icons/plus.png'
+// Api
 import { api } from '../../api/connection';
 
-export const ChatMaker = () => {
-    const [username, setUsername] = useState('');
+// Assets
+import plus from '../../../assets/icons/plus.png'
 
+export const ChatMaker = () => {
+
+    const [username, setUsername] = useState('');
     const [isNewChatVisible, setIsNewChatVisible] = useState(false);
 
+    // ----- Functions -----
+
+    // Show chat maker
     const plusHandle = async () => {
         setIsNewChatVisible(true);
     }
 
+    // Make chat maker invisible
     const returnHandler = async () => {
         setIsNewChatVisible(false);
     }
 
+    // Chat maker function
     const newUser = async () => {
+
+        // Get local data
         const localData = await AsyncStorage.getItem('userData')
         const userData = JSON.parse(localData)
 
+        // Store the chat users in an array
         const jsonData = {
             "user1": userData.username,
             "user2": username
         };
 
+        // Send array to the api
         try {
             const response = await fetch(api.newChat, {
                 method: 'POST',
@@ -36,24 +49,31 @@ export const ChatMaker = () => {
                 body: JSON.stringify(jsonData),
             });
 
+            // Bad response
             if (!response.ok) {
                 throw new Error('The api do not respond');
             }
 
+            // Success response
         } catch(error) {
             console.log('[ CLIENT ] Error settin new chat: ', error);
             throw error
         }
+
+        // Make chat maker invisible
         setIsNewChatVisible(false);
       }
 
+    // ----- DOM -----
     return(
         <View style={style.container}>
 
+            {/* Button to make chat maker visible */}
             <TouchableOpacity onPress={plusHandle} style={style.plusContainer}>
                 <Image source={plus} style={style.plusIcon}></Image>
             </TouchableOpacity>
 
+            {/* Chat maker */}
             {isNewChatVisible && (
             <View  style={style.newChatContainer}>
                 <Text>New Chat</Text>
@@ -61,15 +81,18 @@ export const ChatMaker = () => {
                     <TextInput
                     placeholder="recipient username"
                     placeholderTextColor="gray"
+
+                    // Set input name
                     onChangeText={setUsername}
                     style={style.newChatInput}
                     ></TextInput>
 
+                    {/* Button to finish */}
                     <TouchableOpacity onPress={newUser} onChangeText={setUsername} style={style.newChatButton}>
                         <Text style={style.newChatButtonText}>Start</Text>
                     </TouchableOpacity>
-
                 </View>
+
                 {/* Returner */}
                 <TouchableOpacity onPress={returnHandler} style={style.returnHandler} />
             </View>
@@ -78,6 +101,7 @@ export const ChatMaker = () => {
     )
 }
 
+// ----- Style -----
 const style = StyleSheet.create({
     container: {
         position: 'absolute',
