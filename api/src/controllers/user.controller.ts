@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { IUser } from '../interfaces/user.interface';
+import { IUser, IChat } from '../interfaces/interfaces';
 
 import { UserModel } from '../models/user.model';
 
@@ -12,7 +12,7 @@ export class UserController {
             console.log('[ SERVER ] New client has been created: ' + newUser);
             res.status(201).json({ user: newUser });
         } catch(error) {
-            console.log('[ SERVER ] Failed to create a new user at controller: ' + error);
+            console.log('[ SERVER ] Failed to create a new user at controller: ', error);
             res.status(500).json({ error: 'The username or email are in use.' });
         }
     }
@@ -27,10 +27,9 @@ export class UserController {
             res.status(201).json({ user: dataChecker.username, check: "Success" });
 
         } catch(error) {
-            console.log('[ SERVER ] Error checking the user' + error)
+            console.log('[ SERVER ] Error checking the user at controller: ', error)
             res.status(500).json({ error: 'Error checking the user.' });
         }
     }
-
 
 }

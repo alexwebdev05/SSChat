@@ -1,66 +1,131 @@
-import { StyleSheet, Text, View, Image } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+// React dependencies
+import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
+import * as NavigationBar from 'expo-navigation-bar';
+import { useEffect, useState } from 'react';
 
-// Icons
-import options from '../../assets/icons/options.png'
+// Theme
+import generalColors from '../styles/generalColors';
+import { StatusBar  } from 'expo-status-bar';
+
+// UI
+import Header from '../ui/header';
+import { Inbox } from '../ui/inbox';
+import { ChatMaker } from '../ui/chatMaker/index'
+
+// Utils
+import { logOut } from '../utils/logout';
 
 export default function Main() {
+
+    const [isOptionMenuVisible, setIsOptionMenuVisible] = useState(false)
+
+    // Navigation var transparent
+    useEffect(() => {
+        NavigationBar.setBackgroundColorAsync(generalColors.main);
+    }, []);
+
+    // ----- Functions -----
+
+    // Change menu visibility
+    const showMenu = async () => {
+        // Make visible
+        if (isOptionMenuVisible === true) {
+            setIsOptionMenuVisible(false)
+        // Make transparent
+        } else {
+            setIsOptionMenuVisible(true)
+        }
+    }
+
+    // Make menu invisible
+    const returnHandler = () => {
+        setIsOptionMenuVisible(false)
+    }
+
+    // ----- DOM -----
     return (
-        <View style={style.container}>
+        <View style={style.screen}>
+
+            {/* Transparent StatusBar */}
             <StatusBar barStyle="auto" />
 
-            {/* Tab */}
-            <View style={style.tab}>
-                <Text style={style.title}>SSChat</Text>
-                <Image source={options} style={style.optionIcon}></Image>
+            {/* Header */}
+            <Header />
+
+            {/* Options */}
+            <TouchableOpacity onPress={showMenu} style={style.options}>
+                <Image source={require( 'app/assets/icons/options.png' )} style={{width: 20, height: 20,}}/>
+
+                {/* Log Out */}
+                {isOptionMenuVisible && (
+                    <View style={style.optionButtons}>
+                        <TouchableOpacity onPress={logOut} style={style.logOutButton}>
+                            <Text style={{color: generalColors.white, fontWeight: 800}}>Log out</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+
+            </TouchableOpacity>
+
+            {/* Return */}
+            {isOptionMenuVisible && (
+                <TouchableOpacity onPress={returnHandler} style={style.returnHandler} />
+            )}
+
+            {/* Chats */}
+            <View style={style.chats}>
+                <Inbox />
             </View>
 
-            {/* Search */}
-            <View>
-                <Text>Search</Text>
-            </View>
-
-
+            {/* Chat maker */}
+            <ChatMaker />
+            
         </View>
     )
 }
 
+// ----- Styles -----
 const style = StyleSheet.create({
-    container: {
-        marginTop: 40,
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-
-        backgroundColor: '#5eb1ff'
-    },
-
-    // Tab
-    tab: {
-        position: 'absolute',
-        top: 0,
-        flexDirection: 'row',
+    screen: {
         width: '100%',
-        paddingVertical: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-
-        borderBottomLeftRadius: 40,
-        borderBottomRightRadius: 40,
-
-        backgroundColor: 'white',
+        height: '100%',
+        alignItems: 'center'
     },
-    title: {
-        fontWeight: 'bold',
-        fontSize: 25,
-        color: '#004584'
+    chats: {
+        width: '100%',
+        paddingHorizontal: 15,
     },
-    optionIcon: {
+    options: {
         position: 'absolute',
+        top: 60,
         right: 30,
+        zIndex: 10,
+    },
+    optionButtons: {
+        position: 'absolute',
+        right: 0,
+        top: 25,
+        width: 80,
+        padding: 5,
+        alignItems: 'flex-end',
+        backgroundColor: generalColors.main,
+        borderRadius: 10,
+        zIndex: 10
+    },
+    logOutButton: {
+        width: '100%',
+        alignItems: 'center',
+    },
+    // Return
+    returnHandler: {
         width: 20,
         height: 20,
+        position: "absolute",
+        left: 0,
+        top: 0,
+        width: "100%",
+        height: "100%",
+        zIndex: 1,
     }
-    
-    //
+
 })
