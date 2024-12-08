@@ -86,9 +86,8 @@ export const Inbox = () => {
     };
 
     // Navigate to Chat screen
-    const handleNavigation = () => {
-        navigation.navigate('Chat');
-        console.log()
+    const handleNavigation = (user) => {
+        navigation.navigate('Chat', {user});
     };
 
     // ----- DOM -----
@@ -97,7 +96,7 @@ export const Inbox = () => {
 
             {/* Dinamic chat */}
             {Object.keys(groupChats()).map((user) => (
-                <TouchableOpacity onPress={handleNavigation} key={user} style={style.chatContainer}>
+                <TouchableOpacity onPress={() => handleNavigation(user)} key={user} style={style.chatContainer}>
 
                     {/* User image */}
                     <Image source={require('app/assets/icons/profile.png')} style={{width: 55, height: 55, marginRight: 10}} />
