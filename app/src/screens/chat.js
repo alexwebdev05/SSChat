@@ -1,14 +1,46 @@
-import { StyleSheet, View, Text, Image, TouchableOpacity, Button, TextInput, Dimensions } from 'react-native';
+// React libraries
+import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, Dimensions } from 'react-native';
+import { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Shadow } from 'react-native-shadow-2';
 
 // Theme
 import generalColors from '../styles/generalColors';
 import { StatusBar  } from 'expo-status-bar';
 
+// Api
+import { getMessages } from '../utils/getMessages';
+
 export default function Chat({route}) {
+    const [localUser, setLocalUser] = useState('');
+    const [messages, setMessages] = useState([]);
+    
+    // Get local user data
+    useEffect(() => {
+        const getLocalUser = async () => {
+            const localData = await AsyncStorage.getItem('userData');
+            const userData = JSON.parse(localData);
+            setLocalUser(userData.username);
+        };
+        getLocalUser();
+    }, []);
 
     // Other user name
     const { user } = route.params
+
+    useEffect(() => {
+
+        // Checks if the users are loaded
+        if (!user || !localUser) return;
+
+        // Get message data
+        const interval = getMessages(user, localUser, (newMessages) => {
+          setMessages(newMessages);
+        });
+    
+        // Stop interval when unmount the component
+        return () => clearInterval(interval);
+    }, [user, localUser])
 
     // ----- DOM -----
     return (
@@ -38,16 +70,32 @@ export default function Chat({route}) {
             {/* Messages */}
             <View style={style.messageContainer}>
 
-                <View style={style.message}>
-                    <Text style={style.messageText}>Hola buenas tardes</Text>
-                </View>
+
+                {messages.map((message) => {  
+                    if (message.sender == user) {
+                        return (
+                            <View
+                            style={style.message}
+                            key={message.id}
+                            >
+                                <Text style={style.messageText}>{message.message}</Text>
+                            </View>
+                        )
+                    }                  
+                    return (
+                        <View
+                        key={message.id}
+                        style={style.userHost}>
+                            <View style={style.messageHost}>
+                                <Text style={style.messageText}>{message.message}</Text>
+                            </View>
+                        </View>
+                    )
+                })}
+                
 
 
-                <View style={style.userHost}>
-                    <View style={style.messageHost}>
-                        <Text style={style.messageText}>Hola buenas tardes</Text>
-                    </View>
-                </View>
+                
 
             </View>
 
@@ -108,7 +156,7 @@ const style = StyleSheet.create({
 
     message: {
         alignSelf: 'flex-start',
-        paddingVertical: 5,
+        paddingVertical: 3,
         paddingHorizontal: 10,
         marginHorizontal: 20,
         marginTop: 10,
@@ -119,7 +167,7 @@ const style = StyleSheet.create({
 
     messageHost: {
         alignSelf: 'flex-start',
-        paddingVertical: 5,
+        paddingVertical: 3,
         paddingHorizontal: 10,
         marginHorizontal: 20,
         marginTop: 10,
