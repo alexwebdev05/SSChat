@@ -33,7 +33,7 @@ export const Inbox = () => {
         // Get data every 2 seconds
         const interval = setInterval(() => {
             chats();
-        }, 2000);
+        }, 100);
 
         // Clear interval
         return () => clearInterval(interval);

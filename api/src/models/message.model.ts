@@ -28,4 +28,30 @@ export class MessageModel {
             await client.end();
         }
     }
+
+    // Send message
+    static async sendMessage(data: IMessage) {
+        const client = await dbConnect();
+
+        try {
+
+            const sender = data.sender
+            const receiver = data.receiver
+            const message = data.message
+
+            const response = await client.query(
+                'INSERT INTO messages (sender, receiver, message) VALUES ($1, $2, $3) RETURNING *',
+                [sender, receiver, message]
+            )
+
+            return response.rows
+            
+        } catch (error) {
+
+            console.log('[ SERVER ] Failed to send messages at model: ' + error)
+
+        } finally {
+            await client.end();
+        }
+    }
 }

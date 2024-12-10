@@ -9,11 +9,16 @@ import generalColors from '../styles/generalColors';
 import { StatusBar  } from 'expo-status-bar';
 
 // Api
-import { getMessages } from '../utils/getMessages';
+import { getMessages } from '../utils/api/getMessages';
+import { sendMessage } from '../utils/api/sendMessage';
+
+// Utils
+import { dateFormatter } from '../utils/dateFormatter';
 
 export default function Chat({route}) {
     const [localUser, setLocalUser] = useState('');
     const [messages, setMessages] = useState([]);
+    const [promisedMessage, setPromisedMessage] = useState('')
     
     // Get local user data
     useEffect(() => {
@@ -28,6 +33,7 @@ export default function Chat({route}) {
     // Other user name
     const { user } = route.params
 
+    // Get messages
     useEffect(() => {
 
         // Checks if the users are loaded
@@ -41,6 +47,11 @@ export default function Chat({route}) {
         // Stop interval when unmount the component
         return () => clearInterval(interval);
     }, [user, localUser])
+
+    // Send message
+    const send = (promisedMessage) => {
+        sendMessage(localUser, user, promisedMessage)
+    }
 
     // ----- DOM -----
     return (
@@ -79,6 +90,7 @@ export default function Chat({route}) {
                             key={message.id}
                             >
                                 <Text style={style.messageText}>{message.message}</Text>
+                                <Text style={style.messageDate}>{dateFormatter(message.created_at)}</Text>
                             </View>
                         )
                     }                  
@@ -88,6 +100,7 @@ export default function Chat({route}) {
                         style={style.userHost}>
                             <View style={style.messageHost}>
                                 <Text style={style.messageText}>{message.message}</Text>
+                                <Text style={style.messageDate}>{dateFormatter(message.created_at)}</Text>
                             </View>
                         </View>
                     )
@@ -101,14 +114,19 @@ export default function Chat({route}) {
 
             {/* Message creator */}
             <View style={style.messageCreator}>
+
+                {/* Message setter */}
                 <TextInput 
-                    placeholder='Message'
-                    style={style.messageInput}
+                placeholder='Message'
+                onChangeText={setPromisedMessage}
+                style={style.messageInput}
                 />
 
                 {/* Send button */}
                 <TouchableOpacity
-                    style={style.sendButton}
+                onPress={() => send(promisedMessage)}
+                onFocus={() => setPromisedMessage('')}
+                style={style.sendButton}
                 >
 
                 </TouchableOpacity>
@@ -155,30 +173,40 @@ const style = StyleSheet.create({
     },
 
     message: {
+        flexDirection: 'row',
+        alignItems: 'flex-end',
         alignSelf: 'flex-start',
-        paddingVertical: 3,
+        paddingVertical: 4,
         paddingHorizontal: 10,
         marginHorizontal: 20,
         marginTop: 10,
         borderRadius: 10,
-        fontSize: 7,
         backgroundColor: generalColors.guestMessage
     },
 
     messageHost: {
+        flexDirection: 'row',
+        alignItems: 'flex-end',
         alignSelf: 'flex-start',
-        paddingVertical: 3,
+        paddingVertical: 4,
         paddingHorizontal: 10,
         marginHorizontal: 20,
         marginTop: 10,
         borderRadius: 10,
-        fontSize: 7,
         backgroundColor: generalColors.main
     },
 
     messageText: {
-        fontWeight: 800,
+        fontSize: 16,
+        fontWeight: 500,
         color: 'white'
+    },
+
+    messageDate: {
+        fontSize: 10,
+        color: 'white',
+        fontWeight: 500,
+        marginLeft: 10
     },
 
     // Bottom Options

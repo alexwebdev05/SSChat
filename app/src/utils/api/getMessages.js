@@ -1,4 +1,4 @@
-import { api } from '../api/connection';
+import { api } from '../../api/connection';
 
 export const getMessages = (sender, receiver, onMessagesUpdate) => {
   const interval = setInterval(async () => {

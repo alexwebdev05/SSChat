@@ -10,7 +10,6 @@ export const dbConnect = async () => {
 
     try {
         await client.connect();
-        console.log('Connexion stabilized to postgreSQL');
         return client
 
     } catch(error) {

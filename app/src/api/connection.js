@@ -9,5 +9,6 @@ export const api = {
     getChats: 'http://192.168.1.81:3000/api/chats/getchats/',
 
     // Messages
-    getMessages: 'http://192.168.1.81:3000/api/messages/getmessages/'
+    getMessages: 'http://192.168.1.81:3000/api/messages/getmessages/',
+    sendMessage: 'http://192.168.1.81:3000/api/messages/sendmessage/',
 }
