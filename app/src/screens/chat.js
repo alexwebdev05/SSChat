@@ -39,13 +39,19 @@ export default function Chat({route}) {
         // Checks if the users are loaded
         if (!user || !localUser) return;
 
-        // Get message data
-        const interval = getMessages(user, localUser, (newMessages) => {
-          setMessages(newMessages);
-        });
-    
-        // Stop interval when unmount the component
-        return () => clearInterval(interval);
+        // Clear messages before get new messages
+        setMessages([])
+
+        const cleanupWebSocket = getMessages(localUser, user, setMessages);
+        
+        return cleanupWebSocket
+
+        // Unmount interval
+        // return () => {
+        //     clearInterval(intervalId);
+        //     cleanupWebSocket();
+        // };
+
     }, [user, localUser])
 
     // Send message

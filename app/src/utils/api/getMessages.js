@@ -1,26 +1,51 @@
 import { api } from '../../api/connection';
 
-export const getMessages = (sender, receiver, onMessagesUpdate) => {
-  const interval = setInterval(async () => {
-    try {
-      const response = await fetch(api.getMessages, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ sender: sender, receiver: receiver }),
-      });
+export const getMessages = (sender, receiver, setMessages) => {
+  const ws = new WebSocket(api.websocket);
 
-      if (!response.ok) {
-        throw new Error('Error in fetching messages');
-      }
+  // Handle connection open
+  ws.onopen = () => {
+    console.log('WebSocket connection established.');
 
-      const data = await response.json();
-      onMessagesUpdate(data);
-    } catch (error) {
-      console.error('Error getting messages:', error);
+    // Set message
+    const message = {
+      action: 'getmessages',
+      sender: sender,
+      receiver: receiver
+    };
+
+    // Send message
+    ws.send(JSON.stringify(message));
+  };
+
+  // Handle incoming messages
+  ws.onmessage = (event) => {
+    const incomingMessage = JSON.parse(event.data);
+    
+    // If receive a lot of messages
+    if (Array.isArray(incomingMessage)) {
+      setMessages((prevMessages) => [...prevMessages, ...incomingMessage]);
+
+    // If receive one message
+    } else {
+      setMessages((prevMessages) => [...prevMessages, incomingMessage]);
     }
-  }, 1000);
+  };
 
-  return interval;
+  // Handle errors
+  ws.onerror = (error) => {
+    console.error('WebSocket error:', error);
+  };
+
+  // Handle connection close
+  ws.onclose = () => {
+    console.log('WebSocket connection closed.');
+  };
+
+  // Cleanup WebSocket connection on unmount
+  return () => {
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.close();
+    }
+  };
 };

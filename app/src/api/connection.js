@@ -11,4 +11,7 @@ export const api = {
     // Messages
     getMessages: 'http://192.168.1.81:3000/api/messages/getmessages/',
     sendMessage: 'http://192.168.1.81:3000/api/messages/sendmessage/',
+
+    // WebSocket
+    websocket: 'ws://192.168.1.81:4000'
 }
