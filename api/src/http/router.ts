@@ -1,10 +1,10 @@
-import { Router } from 'express';
+import express from 'express';
 
-import { UserController } from '../controllers/user.controller';
-import { ChatController } from '../controllers/chat.controller';
-import { MessageController } from '../controllers/message.controller';
+import { UserController } from './controllers/user.controller';
+import { ChatController } from './controllers/chat.controller';
+import { MessageController } from './controllers/message.controller';
 
-const router = Router();
+const router = express.Router();
 
 // [ USER ROUTES ]
 

@@ -1,6 +1,6 @@
 import { IChat } from "../interfaces/interfaces";
 
-import { dbConnect } from '../conf/db';
+import { dbConnect } from '../../conf/db';
 
 export class ChatModel {
 
