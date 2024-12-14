@@ -9,8 +9,7 @@ import generalColors from '../styles/generalColors';
 import { StatusBar  } from 'expo-status-bar';
 
 // Api
-import { getMessages } from '../utils/api/getMessages';
-import { sendMessage } from '../utils/api/sendMessage';
+import { socketConnection, getMessages, sendMessage } from '../utils/api/messageSocket';
 
 // Utils
 import { dateFormatter } from '../utils/dateFormatter';
@@ -28,6 +27,8 @@ export default function Chat({route}) {
             setLocalUser(userData.username);
         };
         getLocalUser();
+
+        socketConnection(setMessages)
     }, []);
 
     // Other user name
@@ -39,18 +40,8 @@ export default function Chat({route}) {
         // Checks if the users are loaded
         if (!user || !localUser) return;
 
-        // Clear messages before get new messages
-        setMessages([])
-
         const cleanupWebSocket = getMessages(localUser, user, setMessages);
-        
         return cleanupWebSocket
-
-        // Unmount interval
-        // return () => {
-        //     clearInterval(intervalId);
-        //     cleanupWebSocket();
-        // };
 
     }, [user, localUser])
 

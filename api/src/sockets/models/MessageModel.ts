@@ -8,7 +8,6 @@ export class MessageModel {
         const client = await dbConnect();
 
         try {
-            console.log(data)
             const sender = data.sender
             const receiver = data.receiver
 
@@ -17,8 +16,13 @@ export class MessageModel {
                 [sender, receiver]
             )
 
+            // Add message identifier
+            const responseGetMessages = {
+                action: 'getmessages',
+                response: response.rows
+            }
 
-            return response.rows;
+            return responseGetMessages;
 
 
         } catch (error) {
@@ -28,6 +32,35 @@ export class MessageModel {
         } finally {
             await client.end();
         }
+    }
+
+    // Send message
+    static async sendMessage(data: IMessage) {
+        const client = await dbConnect();
+
+        try {
+
+            const sender = data.sender
+            const receiver = data.receiver
+            const message = data.message
+
+            const response = await client.query(
+                'INSERT INTO messages (sender, receiver, message) VALUES ($1, $2, $3) RETURNING *',
+                [sender, receiver, message]
+            )
+
+            // Add message identifier
+            const responseSendMessage = {
+                action: 'sendmessage',
+                response: response.rows
+            }
+
+            return responseSendMessage;
+
+        } catch(error) {
+            console.log('[ SERVER ] Failed to send message at model: ' + error)
+        }
+
     }
 
 }
