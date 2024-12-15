@@ -1,7 +1,7 @@
 export default generalColors = {
 
     // Main
-    main: '#1A7BD6',
+    main: '#1e7aff',
     white: '#f6f6f6',
     black: '',
 
@@ -10,10 +10,11 @@ export default generalColors = {
     chats: '#d4d4d4',
     
     // Smooth shadow
-    start: '#00000005',
-    finish: '#00000000'
+    start: '#00000010',
+    finish: '#00000000',
 
-
-    // Texts
+    // Chats
+    messageMaker: '#d4d4d4',
+    guestMessage: '#7f7f7f'
 
 }
