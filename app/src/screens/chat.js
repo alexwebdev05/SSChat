@@ -1,6 +1,6 @@
 // React libraries
-import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, Dimensions } from 'react-native';
-import { useEffect, useState } from 'react';
+import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, Dimensions, ScrollView  } from 'react-native';
+import { useEffect, useState, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Shadow } from 'react-native-shadow-2';
 
@@ -18,6 +18,7 @@ export default function Chat({route}) {
     const [localUser, setLocalUser] = useState('');
     const [messages, setMessages] = useState([]);
     const [promisedMessage, setPromisedMessage] = useState('')
+    const scrollViewRef = useRef(null);
     
     // Get local user data
     useEffect(() => {
@@ -48,7 +49,15 @@ export default function Chat({route}) {
     // Send message
     const send = (promisedMessage) => {
         sendMessage(localUser, user, promisedMessage)
+        setPromisedMessage('');
     }
+
+    // Move to bottom of the chat
+    useEffect(() => {
+        if (scrollViewRef.current) {
+            scrollViewRef.current.scrollToEnd({ animated: true });
+        }
+    }, [messages]);
 
     // ----- DOM -----
     return (
@@ -76,8 +85,11 @@ export default function Chat({route}) {
             </Shadow>
 
             {/* Messages */}
-            <View style={style.messageContainer}>
-
+            <ScrollView
+                style={style.messageContainer}
+                ref={scrollViewRef} // Asignamos la referencia
+                onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })} // Desplazar al final automáticamente
+            >
 
                 {messages.map((message) => {  
                     if (message.sender == user) {
@@ -103,11 +115,11 @@ export default function Chat({route}) {
                     )
                 })}
                 
-
+            </ScrollView>
 
                 
 
-            </View>
+
 
             {/* Message creator */}
             <View style={style.messageCreator}>
@@ -116,6 +128,7 @@ export default function Chat({route}) {
                 <TextInput 
                 placeholder='Message'
                 onChangeText={setPromisedMessage}
+                value={promisedMessage}
                 style={style.messageInput}
                 />
 
@@ -125,7 +138,7 @@ export default function Chat({route}) {
                 onFocus={() => setPromisedMessage('')}
                 style={style.sendButton}
                 >
-
+                    <Image source={require('app/assets/icons/send.png')} style={{width: 30, height: 30, marginRight: 3}} />
                 </TouchableOpacity>
             </View>
 
@@ -230,5 +243,7 @@ const style = StyleSheet.create({
         height: 45,
         marginLeft: 10,
         backgroundColor: generalColors.main,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 })

@@ -26,7 +26,6 @@ export const socketConnection = (setMessages) => {
 		const incomingMessage = JSON.parse(event.data)
 
 		if ( incomingMessage.action == 'getmessages' ) {
-			console.log('[ WebSocket ] ' + incomingMessage.response)
 			actualChatMessages = incomingMessage.response
 			setMessages(actualChatMessages)
 		}
