@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
 // Api
-import { api } from '../../api/connection';
+import { api } from '../../utils/api/connection';
 
 // Theme
 import generalColors from '../../styles/generalColors';
@@ -71,6 +71,10 @@ export const Inbox = () => {
 
     // Function to group chats by the other user
     const groupChats = () => {
+        if (!Array.isArray(chatContent)) {
+            return {};
+        }
+        
         const groupedChats = chatContent.reduce((groups, chat) => {
             let otherUser = chat.user1 === localUser ? chat.user2 : chat.user1;
 

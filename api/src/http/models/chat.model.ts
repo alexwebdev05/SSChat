@@ -37,13 +37,14 @@ export class ChatModel {
             const response = await client.query(
                 'SELECT * FROM chats WHERE user1 = $1 OR user2 = $2',
                 [username, username]
-            )
+            );
             if (response.rows.length === 0) {
-                throw new Error('No rows returned from query');
+                return { message: 'No chats found' };
             }
             return response.rows;
         } catch(error) {
-            console.log('[ SERVER ] Failed to get chats at model: ' + error)
+            console.log('[ SERVER ] Failed to get chats at model: ' + error);
+            return { message: 'Error retrieving chats' };
         } finally {
             await client.end();
         }

@@ -1,4 +1,4 @@
-import { api } from '../../api/connection';
+import { api } from './connection';
 
 let ws;
 let actualChatMessages;

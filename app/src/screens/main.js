@@ -13,7 +13,7 @@ import { Inbox } from '../ui/inbox';
 import { ChatMaker } from '../ui/chatMaker/index'
 
 // Utils
-import { logOut } from '../utils/logout';
+import { logOut } from '../utils/session/logout';
 
 export default function Main() {
 

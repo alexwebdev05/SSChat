@@ -5,7 +5,7 @@ import { dbConnect } from '../../conf/db';
 export class UserModel {
 
     // Modify data
-    static async create(userData: Omit<IUser, 'id'>): Promise<IUser> {
+    static async registeruser(userData: Omit<IUser, 'id'>): Promise<IUser> {
         const { username, email, password } = userData;
         const client = await dbConnect();
 
@@ -25,19 +25,6 @@ export class UserModel {
         }
         
 
-        
-    }
-
-    static async update() {
-        
-    }
-
-    static async delete() {
-        
-    }
-
-    // Manage data
-    static async getAll() {
         
     }
 

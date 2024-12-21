@@ -1,175 +1,149 @@
 // React libraries
 import { useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
-// Api
-import { api } from '../api/connection';
+// Functions
+import { signIn } from '../utils/api/login';
 
 // Assets
-import logo from '../../assets/logo.png';
+import logo from '../../assets/logo.webp';
 
+// Theme
+import generalColors from '../styles/generalColors'
 
 export default function Login({ onLogin }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    // ----- Functions -----
+    const navigation = useNavigation();
 
-    // Check the user and login
-    const handleCredentials = async () => {
+    // Functions
+    const handleNavigation = () => {
+        navigation.navigate('Register');
+    }
 
-        // Input data array
-        const jsonData = {
-            "email": email,
-            "password": password,
-        };
-
-        // Check data on the database
-        try {
-            // Sen data to api
-            const response = await fetch(api.chaeckUsers, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(jsonData),
-            });
-
-            // Bad response
-            if (!response.ok) {
-                throw new Error('Error en la respuesta de la API');
-            }
-
-            // Login success
-            const data = await response.json();
-            console.log('Login successful', data);
-            
-            // Make an array with user data
-            const storeData = {
-                "username": data.user,
-                "email": email
-            }
-
-            // Store data locally
-            storeUserData(storeData);
-
-            // login function on /src/App.js named handleLogin
-            onLogin();
-
-            // Catch erros
-        } catch (error) {
-            console.error('Error during the loggin:', error);
-        }
-    };
-
-    // Save data locally
-    const storeUserData = async (userData) => {
-        try {
-            // Saveing data
-            await AsyncStorage.setItem('userData', JSON.stringify(userData));
-            console.log('User data saved locally');
-            // catch errors
-        } catch (error) {
-            console.error('Error saving user data', error);
-        }
-    };
-
-    // ----- DOM -----
-    return (
-        <View style={style.container}>
-            <StatusBar style="auto" />
+    return(
+        <View style={style.screen}>
 
             {/* Logo */}
             <Image source={logo} style={style.logo} />
 
-            {/* Title and subtitle */}
+            {/* Title */}
             <Text style={style.title}>Sign in SSChat</Text>
-            <Text style={style.subtitle}>Access to your account at SSChat</Text>
 
-            {/* Form */}
-            <View style={style.inputContainer}>
-                {/* Mail */}
-                <Text style={style.bold}>Email address</Text>
-                <TextInput
-                    style={style.input}
-                    placeholder="example@example.com"
-                    placeholderTextColor="gray"
-                    onChangeText={setEmail}
-                />
+            {/* Inputs */}
+            <View style={style.blocksContainer}>
+
+                {/* Email */}
+                <View style={style.blocks}>
+                    <Text style={style.blockTitle}>Email adress</Text>
+                    <TextInput
+                        style={style.input}
+                        placeholder="example@example.com"
+                        placeholderTextColor="gray"
+                        onChangeText={setEmail}
+                    />
+                </View>
 
                 {/* Password */}
-                <Text style={style.bold}>Password</Text>
-                <TextInput
-                    style={style.input}
-                    placeholder="**********"
-                    placeholderTextColor="gray"
-                    secureTextEntry={true}
-                    onChangeText={setPassword}
-                />
+                <View style={style.blocks}>
+                    <Text style={style.blockTitle}>Password</Text>
+                    <TextInput
+                        style={style.input}
+                        placeholder="••••••••••"
+                        placeholderTextColor="gray"
+                        secureTextEntry={true}
+                        onChangeText={setPassword}
+                    />
+                </View>
 
-                {/* Sign button */}
-                <TouchableOpacity onPress={handleCredentials}>
-                    <View style={style.button}>
-                        <Text style={[style.bold, style.white]}>Sign in</Text>
-                    </View>
-                </TouchableOpacity>
+                {/* Sign and register buttons */}
+                <View style={style.loginRegister}>
+                    <TouchableOpacity style={style.registerContainer}>
+                        <Text style={style.register} onPress={handleNavigation}>Register</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => signIn(email, password, onLogin)} style={style.signInContainer}>
+                        <Text style={style.signIn}>Sign in</Text>
+                    </TouchableOpacity>
+                </View>
+
+
             </View>
+
         </View>
-    );
+    )
 }
 
-// ----- Styles -----
 const style = StyleSheet.create({
-    container: {
+    screen: {
+        width: '100%',
+        height: '100%',
         alignItems: 'center',
-        flex: 1,
-        marginTop: 100
+        justifyContent: 'center'
     },
+
     logo: {
         width: 100,
         height: 100,
-        margin: 30,
-        borderRadius: 20,
-        backgroundColor: 'white'
+        marginBottom: 10
     },
+
     title: {
         fontSize: 30,
-        fontWeight: 'bold',
+        fontWeight: 800,
+        marginBottom: 50
     },
-    bold: {
-        fontSize: 20,
-        fontWeight: 'bold',
+
+    blocksContainer: {
+        width: '65%'
     },
-    subtitle: {
-        marginBottom: 20,
+
+    blocks: {
+        marginBottom: 20
     },
-    inputContainer: {
-        width: 350,
-        marginTop: 25,
+
+    blockTitle: {
+        fontSize: 18,
+        marginBottom: 5
     },
+
     input: {
-        width: '100%',
-        height: 50,
-        marginTop: 5,
-        marginBottom: 15,
-        padding: 10,
         borderRadius: 10,
-        fontSize: 15,
-        color: 'black',
-        backgroundColor: 'white',
+        fontSize: 16,
+        backgroundColor: generalColors.input,
+        paddingLeft: 20
     },
-    button: {
-        marginTop: 20,
-        width: '100%',
-        paddingVertical: 10,
-        paddingHorizontal: 10,
+
+    loginRegister: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        maxWidth: '100%',
+        marginTop: 10,
+    },
+
+    signInContainer: {
+        flex: 0.5,
+        height: 40,
+        justifyContent: 'center',
         borderRadius: 10,
-        alignItems: 'center',
-        backgroundColor: '#2592ff'
+        backgroundColor: '#c0c0c0'
     },
-    white: {
-        color: 'white'
+
+    signIn: {
+        textAlign: 'center',
+        fontSize: 16
+    },
+
+    registerContainer: {
+        flex: 1,
+        justifyContent: 'center'
+    },
+
+    register: {
+        fontSize: 16,
+        borderRadius: 5,
+        color: 'blue',
+        textDecorationLine: 'underline'
     }
-});
+})
