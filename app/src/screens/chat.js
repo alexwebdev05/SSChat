@@ -36,7 +36,7 @@ export default function Chat({route}) {
         socketConnection(setMessages)
 
         // Join chat room
-        joinRoom(token)
+        // joinRoom(token)
     }, []);
 
     
