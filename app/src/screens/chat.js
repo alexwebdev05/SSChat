@@ -9,7 +9,7 @@ import generalColors from '../styles/generalColors';
 import { StatusBar  } from 'expo-status-bar';
 
 // Api
-import { socketConnection, getMessages, sendMessage } from '../utils/api/messageSocket';
+import { socketConnection, joinRoom, getMessages, sendMessage } from '../utils/api/messageSocket';
 
 // Utils
 import { dateFormatter } from '../utils/dateFormatter';
@@ -19,6 +19,9 @@ export default function Chat({route}) {
     const [messages, setMessages] = useState([]);
     const [promisedMessage, setPromisedMessage] = useState('')
     const scrollViewRef = useRef(null);
+
+    // Other user name
+    const { user, token } = route.params
     
     // Get local user data
     useEffect(() => {
@@ -29,11 +32,14 @@ export default function Chat({route}) {
         };
         getLocalUser();
 
+        // Socket connection
         socketConnection(setMessages)
+
+        // Join chat room
+        joinRoom(token)
     }, []);
 
-    // Other user name
-    const { user } = route.params
+    
 
     // Get messages
     useEffect(() => {

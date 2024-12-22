@@ -77,7 +77,6 @@ export const Inbox = () => {
         
         const groupedChats = chatContent.reduce((groups, chat) => {
             let otherUser = chat.user1 === localUser ? chat.user2 : chat.user1;
-
             if (!groups[otherUser]) {
                 groups[otherUser] = [];
             }
@@ -90,8 +89,8 @@ export const Inbox = () => {
     };
 
     // Navigate to Chat screen
-    const handleNavigation = (user) => {
-        navigation.navigate('Chat', {user});
+    const handleNavigation = (user, token) => {
+        navigation.navigate('Chat', { user, token });
     };
 
     // ----- DOM -----
@@ -99,15 +98,16 @@ export const Inbox = () => {
         <View style={style.container}>
 
             {/* Dinamic chat */}
-            {Object.keys(groupChats()).map((user) => (
-                <TouchableOpacity onPress={() => handleNavigation(user)} key={user} style={style.chatContainer}>
+            {Object.entries(groupChats()).map(([user, chats]) => (
+                <TouchableOpacity onPress={() => handleNavigation(user, chats[0].token)} key={user} style={style.chatContainer}>
 
                     {/* User image */}
                     <Image source={require('app/assets/icons/profile.png')} style={{width: 55, height: 55, marginRight: 10}} />
 
                     {/* User name */}
-                    <View>
+                    <View> 
                         <Text style={style.chatGroupHeader}>{user}</Text>
+                        <Text style={style.chatGroupHeader}>{chats[0].token}</Text>
                     </View>
 
                 </TouchableOpacity>

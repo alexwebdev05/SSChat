@@ -25,7 +25,19 @@ export const socketConnection = (setMessages) => {
 	ws.onmessage = (event) => {
 		const incomingMessage = JSON.parse(event.data)
 
-		if ( incomingMessage.action == 'getmessages' ) {
+		if (incomingMessage.action === "join") {
+
+			// Create or find room
+			const roomName = incomingMessage.token
+			if (!rooms[roomName]) {
+                rooms[roomName] = [];
+            }
+
+			rooms[roomName].push(ws)
+			ws.room = roomName
+			console.log(`Cliente unido a la sala`)
+
+		} else if ( incomingMessage.action == 'getmessages' ) {
 			actualChatMessages = incomingMessage.response
 			setMessages(actualChatMessages)
 		}
@@ -44,8 +56,23 @@ export const socketConnection = (setMessages) => {
     };
 }
 
+// Join room
+export const joinRoom = (token) => {
+
+	verifieConnection()
+
+	// Set message
+	const joinRoom = {
+		action: 'join',
+		token: token
+	}
+
+	// Send message
+	ws.send(JSON.stringify(joinRoom));
+}
+
 // Get messages
-export const getMessages = (sender, receiver, setMessages) => {
+export const getMessages = (sender, receiver) => {
 
 	verifieConnection()
 
@@ -66,12 +93,16 @@ export const sendMessage = (sender, receiver, message) => {
 
 	verifieConnection()
 
+
+
 	// Set message
 	let sendMessage = {
 		action: 'sendmessage',
+		room: roomName,
 		sender: sender,
 		receiver: receiver,
-		message: message
+		message: message,
+		token: token
 	}
 
 	// Send message
