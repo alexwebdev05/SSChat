@@ -2,6 +2,7 @@ import { api } from './connection';
 
 let ws;
 let actualChatMessages;
+const rooms = {};
 
 // Verifie connection
 const verifieConnection = () => {
@@ -45,6 +46,15 @@ export const socketConnection = (setMessages) => {
 		else if ( incomingMessage.action == 'sendmessage' ) {
 			actualChatMessages = actualChatMessages.concat(incomingMessage.response)
 			setMessages(actualChatMessages)
+
+			const roomName = ws.room;
+            if (rooms[roomName]) {
+                rooms[roomName].forEach(client => {
+                    if (client !== ws && client.readyState === WebSocket.OPEN) {
+                        client.send(JSON.stringify(incomingMessage));
+                    }
+                });
+            }
 		}
 	}
 
@@ -96,16 +106,15 @@ export const sendMessage = (sender, receiver, message) => {
 
 
 	// Set message
-	let sendMessage = {
+	let jsonMessage = {
 		action: 'sendmessage',
 		room: roomName,
 		sender: sender,
 		receiver: receiver,
-		message: message,
-		token: token
+		message: message
 	}
 
 	// Send message
-	ws.send(JSON.stringify(sendMessage));
+	ws.send(JSON.stringify(jsonMessage));
 
 }

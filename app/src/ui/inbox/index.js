@@ -107,7 +107,7 @@ export const Inbox = () => {
                     {/* User name */}
                     <View> 
                         <Text style={style.chatGroupHeader}>{user}</Text>
-                        <Text style={style.chatGroupHeader}>{chats[0].token}</Text>
+
                     </View>
 
                 </TouchableOpacity>
