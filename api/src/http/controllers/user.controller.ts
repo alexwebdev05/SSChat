@@ -5,10 +5,10 @@ import { UserModel } from '../models/user.model';
 
 export class UserController {
     // Create user
-    static async create(req: Request, res: Response): Promise<void> {
+    static async registeruser(req: Request, res: Response): Promise<void> {
         try {
             const userData: Omit<IUser, 'id'> = req.body; 
-            const newUser = await UserModel.create(userData);
+            const newUser = await UserModel.registeruser(userData);
             console.log('[ SERVER ] New client has been created: ' + newUser);
             res.status(201).json({ user: newUser });
         } catch(error) {

@@ -2,6 +2,7 @@ export const api = {
     url: 'http://192.168.1.81:3000/api/',
     
     // Users
+    registerUser: 'http://192.168.1.81:3000/api/users/registeruser/',
     chaeckUsers: 'http://192.168.1.81:3000/api/users/checkuser/',
 
     // Chats

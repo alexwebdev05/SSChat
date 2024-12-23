@@ -1,20 +1,26 @@
 export default generalColors = {
 
-    // Main
+    // ----- Main -----
     main: '#1e7aff',
     white: '#f6f6f6',
     black: '',
 
-    // Secundary
-    shadow: '#000',
-    chats: '#d4d4d4',
+    // ----- Login -----
+    input: '#e5e5e5',
     
-    // Smooth shadow
-    start: '#00000010',
-    finish: '#00000000',
+    // ----- Shadows -----
 
-    // Chats
-    messageMaker: '#d4d4d4',
-    guestMessage: '#7f7f7f'
+        // Shadow
+        shadow: '#000',
+
+        // Gradient shadow
+        start: '#00000010',
+        finish: '#00000000',
+
+    // ----- Chats -----
+        chats: '#d4d4d4',
+
+        messageMaker: '#d4d4d4',
+        guestMessage: '#7f7f7f'
 
 }

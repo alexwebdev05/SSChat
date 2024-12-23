@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
 // Api
-import { api } from '../../api/connection';
+import { api } from '../../utils/api/connection';
 
 // Theme
 import generalColors from '../../styles/generalColors';
@@ -71,9 +71,12 @@ export const Inbox = () => {
 
     // Function to group chats by the other user
     const groupChats = () => {
+        if (!Array.isArray(chatContent)) {
+            return {};
+        }
+        
         const groupedChats = chatContent.reduce((groups, chat) => {
             let otherUser = chat.user1 === localUser ? chat.user2 : chat.user1;
-
             if (!groups[otherUser]) {
                 groups[otherUser] = [];
             }
@@ -86,8 +89,8 @@ export const Inbox = () => {
     };
 
     // Navigate to Chat screen
-    const handleNavigation = (user) => {
-        navigation.navigate('Chat', {user});
+    const handleNavigation = (user, token) => {
+        navigation.navigate('Chat', { user, token });
     };
 
     // ----- DOM -----
@@ -95,15 +98,16 @@ export const Inbox = () => {
         <View style={style.container}>
 
             {/* Dinamic chat */}
-            {Object.keys(groupChats()).map((user) => (
-                <TouchableOpacity onPress={() => handleNavigation(user)} key={user} style={style.chatContainer}>
+            {Object.entries(groupChats()).map(([user, chats]) => (
+                <TouchableOpacity onPress={() => handleNavigation(user, chats[0].token)} key={user} style={style.chatContainer}>
 
                     {/* User image */}
                     <Image source={require('app/assets/icons/profile.png')} style={{width: 55, height: 55, marginRight: 10}} />
 
                     {/* User name */}
-                    <View>
+                    <View> 
                         <Text style={style.chatGroupHeader}>{user}</Text>
+
                     </View>
 
                 </TouchableOpacity>
