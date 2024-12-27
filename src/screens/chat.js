@@ -1,62 +1,59 @@
 // React libraries
-import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, Dimensions, ScrollView  } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, Dimensions, ScrollView } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Shadow } from 'react-native-shadow-2';
 
 // Theme
 import generalColors from '../styles/generalColors';
-import { StatusBar  } from 'expo-status-bar';
+import { StatusBar } from 'expo-status-bar';
 
 // Api
-import { socketConnection, joinRoom, getMessages, sendMessage } from '../utils/api/messageSocket';
+import { socketConnection, getMessages, sendMessage } from '../api/messageSocket';
 
 // Utils
 import { dateFormatter } from '../utils/dateFormatter';
 
-export default function Chat({route}) {
+export default function Chat({ route }) {
     const [localUser, setLocalUser] = useState('');
     const [messages, setMessages] = useState([]);
-    const [promisedMessage, setPromisedMessage] = useState('')
+    const [promisedMessage, setPromisedMessage] = useState('');
+    const [isSocketConnected, setIsSocketConnected] = useState(false);
     const scrollViewRef = useRef(null);
 
     // Other user name
-    const { user, token } = route.params
-    
-    // Get local user data
+    const { user, token } = route.params;
+
+    // Get local user data and establish socket connection
     useEffect(() => {
         const getLocalUser = async () => {
             const localData = await AsyncStorage.getItem('userData');
             const userData = JSON.parse(localData);
             setLocalUser(userData.username);
         };
+
         getLocalUser();
 
         // Socket connection
-        socketConnection(setMessages)
+        const cleanupWebSocket = socketConnection(setMessages, setIsSocketConnected);
 
-        // Join chat room
-        // joinRoom(token)
+        return cleanupWebSocket;
     }, []);
-
-    
 
     // Get messages
     useEffect(() => {
+        // Checks if the users are loaded and socket is connected
+        if (!user || !localUser || !isSocketConnected) return;
 
-        // Checks if the users are loaded
-        if (!user || !localUser) return;
-
-        const cleanupWebSocket = getMessages(localUser, user, setMessages);
-        return cleanupWebSocket
-
-    }, [user, localUser])
+        const cleanupWebSocket = getMessages(user, localUser);
+        return cleanupWebSocket;
+    }, [user, localUser, isSocketConnected]);
 
     // Send message
     const send = (promisedMessage) => {
-        sendMessage(localUser, user, promisedMessage)
+        sendMessage(localUser, user, promisedMessage);
         setPromisedMessage('');
-    }
+    };
 
     // Move to bottom of the chat
     useEffect(() => {

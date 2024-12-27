@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
 // Api
-import { api } from '../../utils/api/connection';
+import { api } from '../../api/connection';
 
 // Theme
 import generalColors from '../../styles/generalColors';

@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'reac
 import { useNavigation } from '@react-navigation/native';
 
 // Functions
-import { signIn } from '../utils/api/login';
+import { signIn } from '../api/login';
 
 // Assets
 import logo from '../../assets/logo.webp';
