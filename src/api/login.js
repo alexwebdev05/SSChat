@@ -11,7 +11,7 @@ export const signIn = async (email, password, onLogin) => {
 
     try {
         // Send data to api
-        const response = await fetch(api.chaeckUsers, {
+        const response = await fetch(api.checkUsers, {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
@@ -30,8 +30,10 @@ export const signIn = async (email, password, onLogin) => {
                    
             // Make an array with user data
             const storeData = {
-                "username": data.user,
-                "email": email
+                "username": data.username,
+                "email": email,
+                "photo": data.photo,
+                "token": data.token
             }
         
             // Store data locally

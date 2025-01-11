@@ -1,10 +1,10 @@
-// react libraries
+// React libraries
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
-// Api
+// API
 import { api } from '../../api/connection';
 
 // Theme
@@ -13,6 +13,8 @@ import generalColors from '../../styles/generalColors';
 export const Inbox = () => {
     const [chatContent, setChatContent] = useState([]);
     const [localUser, setLocalUser] = useState('');
+    const [localUserToken, setLocalUserToken] = useState('');
+    const [groupedChats, setGroupedChats] = useState({});
 
     const navigation = useNavigation();
 
@@ -20,70 +22,105 @@ export const Inbox = () => {
     useEffect(() => {
         const getLocalUser = async () => {
             const localData = await AsyncStorage.getItem('userData');
-            const userData = JSON.parse(localData);
-            setLocalUser(userData.username);
+            if (localData) {
+                const userData = JSON.parse(localData);
+                setLocalUser(userData.username);
+                setLocalUserToken(userData.token);
+            }
         };
         getLocalUser();
     }, []);
 
     // Get chats from local user
     useEffect(() => {
-        if (!localUser) return;
+        if (!localUserToken) return;
 
         // Get data every 2 seconds
         const interval = setInterval(() => {
             chats();
-        }, 100);
+        }, 2000);
 
         // Clear interval
         return () => clearInterval(interval);
-    }, [localUser]);
+    }, [localUserToken]);
+
+    // Group chats when chatContent changes
+    useEffect(() => {
+        const fetchGroupedChats = async () => {
+            const groups = await groupChats();
+            setGroupedChats(groups);
+        };
+
+        if (chatContent.length > 0) {
+            fetchGroupedChats();
+        }
+    }, [chatContent]);
 
     // ----- Functions -----
 
     // Fetch chats from API
     const chats = async () => {
         try {
-            
-            // Send data to api
             const response = await fetch(api.getChats, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ user: localUser }),
+                body: JSON.stringify({ user1: localUserToken }),
             });
 
-            // Bad response
             if (!response.ok) {
                 throw new Error('API response failed');
             }
 
-            // Set obtained chats
             const responseData = await response.json();
             setChatContent(responseData);
-
-            // Catch errors
         } catch (error) {
             console.error('Error fetching chats: ', error);
         }
     };
 
-    // Function to group chats by the other user
-    const groupChats = () => {
+    // Fetch other user name
+    const getOtherUserName = async (token) => {
+        try {
+            const response = await fetch(api.checkToken, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token: token }),
+            });
+
+            if (!response.ok) {
+                throw new Error('API response failed');
+            }
+
+            const responseData = await response.json();
+            return responseData.username;
+        } catch (error) {
+            console.error('Error fetching username: ', error);
+            return 'Unknown User';
+        }
+    };
+
+    // Group chats by the other user
+    const groupChats = async () => {
         if (!Array.isArray(chatContent)) {
             return {};
         }
-        
-        const groupedChats = chatContent.reduce((groups, chat) => {
-            let otherUser = chat.user1 === localUser ? chat.user2 : chat.user1;
-            if (!groups[otherUser]) {
-                groups[otherUser] = [];
+
+        const groupedChats = {};
+
+        for (const chat of chatContent) {
+            let otherUser = chat.user1 === localUserToken ? chat.user2 : chat.user1;
+            const otherUsername = await getOtherUserName(otherUser);
+
+            if (!groupedChats[otherUsername]) {
+                groupedChats[otherUsername] = [];
             }
 
-            groups[otherUser].push(chat);
-            return groups;
-        }, {});
+            groupedChats[otherUsername].push(chat);
+        }
 
         return groupedChats;
     };
@@ -96,20 +133,19 @@ export const Inbox = () => {
     // ----- DOM -----
     return (
         <View style={style.container}>
-
-            {/* Dinamic chat */}
-            {Object.entries(groupChats()).map(([user, chats]) => (
-                <TouchableOpacity onPress={() => handleNavigation(user, chats[0].token)} key={user} style={style.chatContainer}>
-
-                    {/* User image */}
-                    <Image source={require('app/assets/icons/profile.png')} style={{width: 55, height: 55, marginRight: 10}} />
-
-                    {/* User name */}
-                    <View> 
+            {Object.entries(groupedChats).map(([user, chats]) => (
+                <TouchableOpacity
+                    onPress={() => handleNavigation(user, chats[0].token)}
+                    key={user}
+                    style={style.chatContainer}
+                >
+                    <Image
+                        source={require('app/assets/icons/profile.png')}
+                        style={{ width: 55, height: 55, marginRight: 10 }}
+                    />
+                    <View>
                         <Text style={style.chatGroupHeader}>{user}</Text>
-
                     </View>
-
                 </TouchableOpacity>
             ))}
         </View>
@@ -123,14 +159,6 @@ const style = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding: 10,
-        
-    },
-
-    // Chats
-    header: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
     },
     chatGroupHeader: {
         fontSize: 16,
@@ -145,10 +173,6 @@ const style = StyleSheet.create({
         borderRadius: 15,
         marginBottom: 10,
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
     },
-    chatItem: {
-        fontSize: 14,
-        marginBottom: 5,
-    }
 });
