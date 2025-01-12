@@ -13,6 +13,8 @@ const verifieConnection = () => {
 
 // Create connection
 export const socketConnection = (setMessages, setIsSocketConnected) => {
+
+    // Create WebSocket connection
     if (!ws || ws.readyState === WebSocket.CLOSED) {
         ws = new WebSocket(api.websocket);
 
@@ -32,12 +34,17 @@ export const socketConnection = (setMessages, setIsSocketConnected) => {
     ws.onmessage = (event) => {
         const incomingMessage = JSON.parse(event.data);
 
-        if (incomingMessage.action === 'getmessages') {
-            actualChatMessages = incomingMessage.response;
-            setMessages(actualChatMessages);
-            console.log(incomingMessage.response);
+        // Handle join room
+        if (incomingMessage.type === 'joined-room') {
+            console.log('Joined room:', incomingMessage.message);
 
-        } else if (incomingMessage.action === 'sendmessage') {
+        // Handle obtained messages
+        } else if (incomingMessage.type === 'obtained-messages') {
+            actualChatMessages = incomingMessage.messages;
+            setMessages(actualChatMessages);
+            
+        // Handle new message
+        } else if (incomingMessage.type === 'sendmessage') {
             actualChatMessages = actualChatMessages.concat(incomingMessage.response);
             setMessages(actualChatMessages);
         }
@@ -51,33 +58,27 @@ export const socketConnection = (setMessages, setIsSocketConnected) => {
     };
 };
 
+// Enter the room
+export const enterRoom = (sender, roomToken) => {
+    verifieConnection();
+    ws.send(JSON.stringify({
+        type: "join-room",
+        roomToken: roomToken,
+        clientID: sender
+    }));
+};
+
 // Get messages
 export const getMessages = (sender, receiver) => {
     verifieConnection();
-
-    // Set message
-    const getMessagesMessage = {
-        action: 'getmessages',
-        sender: sender,
-        receiver: receiver
-    };
-
-    // Send message
-    ws.send(JSON.stringify(getMessagesMessage));
+    ws.send(JSON.stringify({
+        type: "get-messages",
+        clientID: sender,
+        otherClientID: receiver
+    }));
 };
 
 // Send messages
 export const sendMessage = (sender, receiver, message) => {
-    verifieConnection();
 
-    // Set message
-    const sendMessageMessage = {
-        action: 'sendmessage',
-        sender: sender,
-        receiver: receiver,
-        message: message
-    };
-
-    // Send message
-    ws.send(JSON.stringify(sendMessageMessage));
 };

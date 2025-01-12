@@ -9,51 +9,69 @@ import generalColors from '../styles/generalColors';
 import { StatusBar } from 'expo-status-bar';
 
 // Api
-import { socketConnection, getMessages, sendMessage } from '../api/messageSocket';
+import { socketConnection, enterRoom, getMessages, sendMessage } from '../api/messageSocket';
 
 // Utils
 import { dateFormatter } from '../utils/dateFormatter';
 
 export default function Chat({ route }) {
+    // ----- States -----
+
+    // Local user data
     const [localUser, setLocalUser] = useState('');
+
+    // Chat messages
     const [messages, setMessages] = useState([]);
+
+    // New messages
     const [promisedMessage, setPromisedMessage] = useState('');
+
+    // Websocket connection
     const [isSocketConnected, setIsSocketConnected] = useState(false);
+
+    // Scroll view reference
     const scrollViewRef = useRef(null);
 
-    // Other user name
-    const { user, token } = route.params;
+    // Other user token and name | Room token
+    const { otherUsername, otherUserToken, roomToken} = route.params;
 
-    // Get local user data and establish socket connection
+
+    // ----- Effects -----
+
+    // Get local user data | Socket connection
     useEffect(() => {
+
+        // Get local user
         const getLocalUser = async () => {
             const localData = await AsyncStorage.getItem('userData');
             const userData = JSON.parse(localData);
-            setLocalUser(userData.username);
+            setLocalUser(userData.token);
         };
-
         getLocalUser();
 
         // Socket connection
         const cleanupWebSocket = socketConnection(setMessages, setIsSocketConnected);
-
-        return cleanupWebSocket;
+        return cleanupWebSocket; 
     }, []);
+
+    // Enter room
+    useEffect(() => {
+        // Checks if the user is loaded and socket is connected
+        if (!localUser || !isSocketConnected) return;
+
+        // Enter room
+        enterRoom(localUser, roomToken);
+    }, [localUser, isSocketConnected]);
 
     // Get messages
     useEffect(() => {
         // Checks if the users are loaded and socket is connected
-        if (!user || !localUser || !isSocketConnected) return;
+        if (!otherUsername || !localUser || !isSocketConnected) return;
 
-        const cleanupWebSocket = getMessages(user, localUser);
+        // Get messages
+        const cleanupWebSocket = getMessages(localUser, otherUserToken);
         return cleanupWebSocket;
-    }, [user, localUser, isSocketConnected]);
-
-    // Send message
-    const send = (promisedMessage) => {
-        sendMessage(localUser, user, promisedMessage);
-        setPromisedMessage('');
-    };
+    }, [otherUsername, localUser, isSocketConnected]);
 
     // Move to bottom of the chat
     useEffect(() => {
@@ -61,6 +79,17 @@ export default function Chat({ route }) {
             scrollViewRef.current.scrollToEnd({ animated: true });
         }
     }, [messages]);
+
+
+    // ----- Functions -----
+
+    // Send message
+    const send = (promisedMessage) => {
+        sendMessage(localUser, otherUsername, promisedMessage);
+        setPromisedMessage('');
+    };
+
+    
 
     // ----- DOM -----
     return (
@@ -81,7 +110,7 @@ export default function Chat({ route }) {
                     <Image source={require('app/assets/icons/profile.png')} style={{width: 45, height: 45, marginRight: 10}} />
 
                     {/* Username */}
-                    <Text style={style.username}>{user}</Text>
+                    <Text style={style.username}>{otherUsername}</Text>
 
                 </View>
                 
@@ -90,12 +119,12 @@ export default function Chat({ route }) {
             {/* Messages */}
             <ScrollView
                 style={style.messageContainer}
-                ref={scrollViewRef} // Asignamos la referencia
-                onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })} // Desplazar al final automáticamente
+                ref={scrollViewRef}
+                onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
             >
 
                 {messages.map((message) => {  
-                    if (message.sender == user) {
+                    if (message.sender == otherUserToken) {
                         return (
                             <View
                             style={style.message}
@@ -120,16 +149,14 @@ export default function Chat({ route }) {
                 
             </ScrollView>
 
-                
-
-
-
-            {/* Message creator */}
+            {/* Message sender */}
             <View style={style.messageCreator}>
 
                 {/* Message setter */}
                 <TextInput 
                 placeholder='Message'
+
+                // Set message on real time
                 onChangeText={setPromisedMessage}
                 value={promisedMessage}
                 style={style.messageInput}
@@ -137,7 +164,11 @@ export default function Chat({ route }) {
 
                 {/* Send button */}
                 <TouchableOpacity
+
+                // Call send function
                 onPress={() => send(promisedMessage)}
+
+                // Reset message
                 onFocus={() => setPromisedMessage('')}
                 style={style.sendButton}
                 >
