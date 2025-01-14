@@ -85,11 +85,9 @@ export default function Chat({ route }) {
 
     // Send message
     const send = (promisedMessage) => {
-        sendMessage(localUser, otherUsername, promisedMessage);
+        sendMessage(localUser, otherUserToken, roomToken, promisedMessage);
         setPromisedMessage('');
     };
-
-    
 
     // ----- DOM -----
     return (

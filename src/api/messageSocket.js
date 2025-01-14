@@ -40,11 +40,11 @@ export const socketConnection = (setMessages, setIsSocketConnected) => {
 
         // Handle obtained messages
         } else if (incomingMessage.type === 'obtained-messages') {
-            actualChatMessages = incomingMessage.messages;
+            actualChatMessages = incomingMessage.response;
             setMessages(actualChatMessages);
             
         // Handle new message
-        } else if (incomingMessage.type === 'sendmessage') {
+        } else if (incomingMessage.type === 'received-message') {
             actualChatMessages = actualChatMessages.concat(incomingMessage.response);
             setMessages(actualChatMessages);
         }
@@ -79,6 +79,13 @@ export const getMessages = (sender, receiver) => {
 };
 
 // Send messages
-export const sendMessage = (sender, receiver, message) => {
-
+export const sendMessage = (sender, receiver, roomToken, message) => {
+    verifieConnection();
+    ws.send(JSON.stringify({
+        type: "send-room-message",
+        clientID: sender,
+        otherClientID: receiver,
+        roomToken: roomToken,
+        message: message
+    }));
 };
