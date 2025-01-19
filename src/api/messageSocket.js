@@ -68,6 +68,16 @@ export const enterRoom = (sender, roomToken) => {
     }));
 };
 
+// Leave the room
+export const leaveRoom = (sender, roomToken) => {
+    verifieConnection();
+    ws.send(JSON.stringify({
+        type: "leave-room",
+        roomToken: roomToken,
+        clientID: sender
+    }));
+};
+
 // Get messages
 export const getMessages = (sender, receiver) => {
     verifieConnection();
@@ -89,3 +99,10 @@ export const sendMessage = (sender, receiver, roomToken, message) => {
         message: message
     }));
 };
+
+// Close websocket
+export const closeWebSocket = () => {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.close();
+    }
+}

@@ -3,13 +3,14 @@ import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, Dimensions,
 import { useEffect, useState, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Shadow } from 'react-native-shadow-2';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 
 // Theme
 import generalColors from '../styles/generalColors';
 import { StatusBar } from 'expo-status-bar';
 
 // Api
-import { socketConnection, enterRoom, getMessages, sendMessage } from '../api/messageSocket';
+import { socketConnection, enterRoom, leaveRoom, getMessages, sendMessage, closeWebSocket } from '../api/messageSocket';
 
 // Utils
 import { dateFormatter } from '../utils/dateFormatter';
@@ -35,6 +36,12 @@ export default function Chat({ route }) {
     // Other user token and name | Room token
     const { otherUsername, otherUserToken, roomToken} = route.params;
 
+    // To detect when user navigates to other screen
+    const nav = useNavigation();
+
+    // To detect when user is watching the component
+    const isFocused = useIsFocused();
+
 
     // ----- Effects -----
 
@@ -57,21 +64,21 @@ export default function Chat({ route }) {
     // Enter room
     useEffect(() => {
         // Checks if the user is loaded and socket is connected
-        if (!localUser || !isSocketConnected) return;
+        if (!localUser || !isSocketConnected || !isFocused) return;
 
         // Enter room
         enterRoom(localUser, roomToken);
     }, [localUser, isSocketConnected]);
 
-    // Get messages
+    // Get messages when otherUsername, localUser, and socket are ready
     useEffect(() => {
-        // Checks if the users are loaded and socket is connected
-        if (!otherUsername || !localUser || !isSocketConnected) return;
+        if (!otherUsername || !localUser || !isSocketConnected || !isFocused) return;
 
-        // Get messages
-        const cleanupWebSocket = getMessages(localUser, otherUserToken);
-        return cleanupWebSocket;
-    }, [otherUsername, localUser, isSocketConnected]);
+        const cleanupWebSocket = socketConnection(setMessages, setIsSocketConnected);
+        getMessages(localUser, otherUserToken);
+        return cleanupWebSocket; // This function will be called when the component unmounts
+    }, [otherUsername, localUser, isSocketConnected, isFocused]);
+
 
     // Move to bottom of the chat
     useEffect(() => {
@@ -80,6 +87,26 @@ export default function Chat({ route }) {
         }
     }, [messages]);
 
+    // Cleanup before navigating away
+    useEffect(() => {
+        const unsubscribe = nav.addListener('beforeRemove', (e) => {
+            // Prevent default behavior of leaving the screen
+            e.preventDefault();
+
+            // Leave chat room
+            leaveRoom(localUser, roomToken);
+
+            // Leave websocket
+            closeWebSocket();
+
+            setMessages([])
+
+            // Navigate away
+            nav.dispatch(e.data.action);
+        });
+
+        return unsubscribe;
+    }, [nav, localUser, roomToken]);
 
     // ----- Functions -----
 
