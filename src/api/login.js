@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import { api } from './connection';
 
 export const signIn = async (email, password, onLogin) => {
@@ -8,7 +7,7 @@ export const signIn = async (email, password, onLogin) => {
         "email": email,
         "password": password,
     };
-
+    console.log(api.checkUsers)
     try {
         // Send data to api
         const response = await fetch(api.checkUsers, {
