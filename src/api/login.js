@@ -7,7 +7,7 @@ export const signIn = async (email, password, onLogin) => {
         "email": email,
         "password": password,
     };
-    console.log(api.checkUsers)
+
     try {
         // Send data to api
         const response = await fetch(api.checkUsers, {
@@ -17,34 +17,36 @@ export const signIn = async (email, password, onLogin) => {
             },
             body: JSON.stringify(jsonData),
         });
+
+        const data = await response.json();
         
         // Bad response
         if (!response.ok) {
-            throw new Error('Error en la respuesta de la API');
+            throw data;
         }
         
         // Login success
-        const data = await response.json();
-            console.log('Login successful', data);
+        console.log('Login successful', data);
                    
-            // Make an array with user data
-            const storeData = {
-                "username": data.username,
-                "email": email,
-                "photo": data.photo,
-                "token": data.token
-            }
-        
-            // Store data locally
-            storeUserData(storeData);
-        
-            // login function on /src/App.js named handleLogin
-            onLogin();
-        
-        // Catch erros
-        } catch (error) {
-            console.error('Error during the loggin:', error);
+        // Make an array with user data
+        const storeData = {
+            "username": data.username,
+            "email": email,
+            "photo": data.photo,
+            "token": data.token
         }
+        
+        // Store data locally
+        storeUserData(storeData);
+        
+        // login function on /src/App.js named handleLogin
+        onLogin();
+        
+    // Catch erros
+    } catch (error) {
+        console.error('Error during login:', error);
+        return { status: 'error', message: error.message };
+    }
 }
 
 // Save data locally

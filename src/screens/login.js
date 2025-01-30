@@ -1,4 +1,3 @@
-// React libraries
 import { useState } from 'react';
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -10,20 +9,34 @@ import { signIn } from '../api/login';
 import logo from '../../assets/logo.webp';
 
 // Theme
-import generalColors from '../styles/generalColors'
+import generalColors from '../styles/generalColors';
 
 export default function Login({ onLogin }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const navigation = useNavigation();
+
+    const handleSignIn = async () => {
+        try {
+            setErrorMessage(''); // Limpiar error previo
+            const result = await signIn(email, password, onLogin);
+            // Si hay un error, lo mostramos
+            if (result.status === 'error') {
+                setErrorMessage(result.message); // Mostrar el mensaje de error
+            }
+        } catch (error) {
+            setErrorMessage(error.message || 'Error inesperado'); // Mostrar el error
+        }
+    };
 
     // Functions
     const handleNavigation = () => {
         navigation.navigate('Register');
     }
 
-    return(
+    return (
         <View style={style.screen}>
 
             {/* Logo */}
@@ -37,7 +50,7 @@ export default function Login({ onLogin }) {
 
                 {/* Email */}
                 <View style={style.blocks}>
-                    <Text style={style.blockTitle}>Email adress</Text>
+                    <Text style={style.blockTitle}>Email address</Text>
                     <TextInput
                         style={style.input}
                         placeholder="example@example.com"
@@ -58,21 +71,25 @@ export default function Login({ onLogin }) {
                     />
                 </View>
 
+                {/* Errors */}
+                {errorMessage ? (
+                    <Text style={style.error}>{errorMessage}</Text>
+                ) : null}
+
                 {/* Sign and register buttons */}
                 <View style={style.loginRegister}>
                     <TouchableOpacity style={style.registerContainer}>
                         <Text style={style.register} onPress={handleNavigation}>Register</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => signIn(email, password, onLogin)} style={style.signInContainer}>
+                    <TouchableOpacity onPress={handleSignIn} style={style.signInContainer}>
                         <Text style={style.signIn}>Sign in</Text>
                     </TouchableOpacity>
                 </View>
 
-
             </View>
 
         </View>
-    )
+    );
 }
 
 const style = StyleSheet.create({
@@ -145,5 +162,10 @@ const style = StyleSheet.create({
         borderRadius: 5,
         color: 'blue',
         textDecorationLine: 'underline'
+    },
+
+    error: {
+        color: 'red',
+        marginTop: -15
     }
 })
