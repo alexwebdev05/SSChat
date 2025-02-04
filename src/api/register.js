@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import { api } from './connection';
 
 export const register = async (username, email, password, onLogin) => {
@@ -10,51 +9,51 @@ export const register = async (username, email, password, onLogin) => {
     };
 
     try {
-        // Send data to api
         const response = await fetch(api.registerUser, {
             method: 'POST',
             headers: {
-            'Content-Type': 'application/json',
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify(jsonData),
         });
 
-        // Bad response
+        // Always parse the response as JSON
+        const data = await response.json();
+
+        // If the response is an error, return the API's JSON response
         if (!response.ok) {
-            throw new Error('Error en la respuesta de la API');
+            return data;
         }
 
-        // Register success
-        const data = await response.json();
-            console.log('Register successful', data);
-                   
-            // Make an array with user data
-            const storeData = {
-                "username": username,
-                "email": email
-            }
+        // Successful registration
+        console.log('Registration successful', data);
         
-            // Store data locally
-            storeUserData(storeData);
-        
-            // login function on /src/App.js named handleLogin
-            onLogin();
-        
-        // Catch erros
-        } catch(error) {
-            console.error('Error during the register:', error);
+        const storeData = {
+            "username": username,
+            "email": email
+        };
+
+        await storeUserData(storeData);
+        onLogin();
+
+        return data; // Return the server's success JSON response
+
+    } catch (error) {
+        console.error('Error during registration:', error);
+
+        // Handle network or parsing errors
+        return { 
+            status: 'error', 
+            message: error.message || 'Unknown error' 
+        };
     }
+};
 
-}
-
-
-// Save data locally
+// Save user data locally
 const storeUserData = async (userData) => {
     try {
-        // Saveing data
         await AsyncStorage.setItem('userData', JSON.stringify(userData));
-        console.log('User data saved locally');
-        // catch errors
+        console.log('User data saved');
     } catch (error) {
         console.error('Error saving user data', error);
     }

@@ -11,13 +11,14 @@ import { api } from '../../api/connection';
 import generalColors from '../../styles/generalColors';
 
 export const Inbox = () => {
+    // State variables to store chat data, user token, and grouped chats
     const [chatContent, setChatContent] = useState([]);
     const [localUserToken, setLocalUserToken] = useState('');
     const [groupedChats, setGroupedChats] = useState({});
 
     const navigation = useNavigation();
 
-    // Get local user data
+    // Fetch local user data from AsyncStorage
     useEffect(() => {
         const getLocalUser = async () => {
             const localData = await AsyncStorage.getItem('userData');
@@ -29,7 +30,7 @@ export const Inbox = () => {
         getLocalUser();
     }, []);
 
-    // Fetch chats periodically
+    // Fetch chats periodically from the API
     useEffect(() => {
         if (!localUserToken) return;
 
@@ -48,6 +49,7 @@ export const Inbox = () => {
                 }
 
                 const responseData = await response.json();
+                console.log(responseData);
                 setChatContent(responseData);
             } catch (error) {
                 console.error('Error fetching chats: ', error);
@@ -55,20 +57,24 @@ export const Inbox = () => {
         };
 
         fetchChats();
+        // Set up an interval to fetch chats every 2 seconds
         const interval = setInterval(fetchChats, 2000);
 
+        // Clean up the interval on component unmount
         return () => clearInterval(interval);
     }, [localUserToken]);
 
-    // Group chats when chatContent changes
+    // Group chats by other user when chatContent changes
     useEffect(() => {
         const groupChats = async () => {
             const grouped = {};
 
             for (const chat of chatContent) {
+                // Determine the other user in the chat
                 const otherUser = chat.user1 === localUserToken ? chat.user2 : chat.user1;
                 const otherUserData = await getOtherUser(otherUser);
 
+                // Group chats by other user's username
                 if (!grouped[otherUserData.username]) {
                     grouped[otherUserData.username] = {
                         otherUserToken: otherUserData.token,
@@ -88,7 +94,7 @@ export const Inbox = () => {
         }
     }, [chatContent]);
 
-    // Fetch other user name
+    // Fetch other user's data from the API
     const getOtherUser = async (token) => {
         try {
             const response = await fetch(api.checkToken, {
@@ -111,12 +117,12 @@ export const Inbox = () => {
         }
     };
 
-    // Navigate to Chat screen
+    // Navigate to Chat screen with selected chat details
     const handleNavigation = (otherUsername, otherUserToken, roomToken) => {
         navigation.navigate('Chat', { otherUsername, otherUserToken, roomToken });
     };
 
-    // ----- DOM -----
+    // Render the Inbox component
     return (
         <View style={style.container}>
             {Object.entries(groupedChats).map(([otherUsername, data]) => (
@@ -138,7 +144,7 @@ export const Inbox = () => {
     );
 };
 
-// ----- Styles -----
+// Styles for the Inbox component
 const style = StyleSheet.create({
     container: {
         width: '100%',

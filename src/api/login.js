@@ -24,16 +24,13 @@ export const signIn = async (email, password, onLogin) => {
         if (!response.ok) {
             throw data;
         }
-        
-        // Login success
-        console.log('Login successful', data);
                    
         // Make an array with user data
         const storeData = {
-            "username": data.username,
+            "username": data.user.username,
             "email": email,
-            "photo": data.photo,
-            "token": data.token
+            "photo": data.user.photo,
+            "token": data.user.token
         }
         
         // Store data locally

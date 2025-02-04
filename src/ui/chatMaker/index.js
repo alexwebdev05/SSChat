@@ -35,9 +35,11 @@ export const ChatMaker = () => {
 
         // Store the chat users in an array
         const jsonData = {
-            "user1": userData.username,
+            "user1": userData.token,
             "user2": username
         };
+
+        console.log(userData);
 
         // Send array to the api
         try {
@@ -156,16 +158,16 @@ const style = StyleSheet.create({
     },
     inputEnter: {
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        zIndex: 2,
     },
     returnHandler: {
-        width: 20,
-        height: 20,
         position: "absolute",
-        left: 0,
         top: 0,
+        left: 0,
         width: "100%",
         height: "100%",
-        zIndex: -1,
+        zIndex: 1,
+        backgroundColor: 'rgba(0,0,0,0.1)',
     }
 })
