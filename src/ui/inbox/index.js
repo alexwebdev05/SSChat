@@ -49,7 +49,6 @@ export const Inbox = () => {
                 }
 
                 const responseData = await response.json();
-                console.log(responseData);
                 setChatContent(responseData);
             } catch (error) {
                 console.error('Error fetching chats: ', error);

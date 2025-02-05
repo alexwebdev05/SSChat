@@ -27,10 +27,10 @@ export const signIn = async (email, password, onLogin) => {
                    
         // Make an array with user data
         const storeData = {
-            "username": data.user.username,
+            "username": data.username,
             "email": email,
-            "photo": data.user.photo,
-            "token": data.user.token
+            "photo": data.photo,
+            "token": data.token
         }
         
         // Store data locally
