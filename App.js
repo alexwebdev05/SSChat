@@ -1,7 +1,5 @@
 // react libraries
 import { useState, useEffect } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -16,7 +14,7 @@ import Chat from './src/screens/chat';
 const Stack = createStackNavigator();
 
 // Utils
-import { handleLogin } from './src/utils/session/handleLogin';
+import { handleLogin } from './src/api/login';
 
 export default function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(null);
