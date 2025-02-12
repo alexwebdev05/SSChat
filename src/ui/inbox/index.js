@@ -9,6 +9,7 @@ import { api } from '../../api/connection';
 
 // Theme
 import generalColors from '../../styles/generalColors';
+import { use } from 'react';
 
 export const Inbox = () => {
     // State variables to store chat data, user token, and grouped chats
@@ -62,6 +63,13 @@ export const Inbox = () => {
         // Clean up the interval on component unmount
         return () => clearInterval(interval);
     }, [localUserToken]);
+
+    // Websocket connection
+    useEffect(() => {
+        if (!localUserToken) return;
+        const cleanupWebSocket = socketConnection(setIsSocketConnected);
+        return cleanupWebSocket; 
+    });
 
     // Group chats by other user when chatContent changes
     useEffect(() => {

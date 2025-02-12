@@ -10,7 +10,7 @@ import generalColors from '../styles/generalColors';
 import { StatusBar } from 'expo-status-bar';
 
 // Api
-import { socketConnection, enterRoom, leaveRoom, getMessages, sendMessage, closeWebSocket } from '../api/messageSocket';
+import { socketConnection, enterRoom, leaveRoom, getMessages, sendMessage, closeWebSocket } from '../api/websocket/messageSocket';
 
 // Utils
 import { dateFormatter } from '../utils/dateFormatter';
