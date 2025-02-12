@@ -1,6 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from './connection';
 
+// ----- Exported functions ----- //
+
+// Sign in function
 export const signIn = async (email, password, onLogin) => {
 
     const jsonData = {
@@ -45,6 +48,28 @@ export const signIn = async (email, password, onLogin) => {
         return { status: 'error', message: error.message };
     }
 }
+
+// Handle login function
+export const handleLogin = async (setIsLoggedIn) => {
+    try {
+        await AsyncStorage.setItem('isLoggedIn', 'true');
+        setIsLoggedIn(true);
+    } catch (error) {
+        console.log("Error saving login state: ", error);
+    }
+};
+
+// Log out function
+export const logOut = async () => {
+    try {
+        await AsyncStorage.clear();
+        console.log('Logged out')
+    } catch(error) {
+        console.log('error logging out: ', error)
+    }
+  }
+
+// ----- File functions ----- //
 
 // Save data locally
     const storeUserData = async (userData) => {
