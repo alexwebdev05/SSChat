@@ -1,4 +1,4 @@
-import { api } from '../connection';
+import { api } from '../url';
 
 let ws = null;
 
@@ -36,7 +36,7 @@ export const socketConnection = (setIsSocketConnected) => {
 
             // Parse message
             const incomingMessage = JSON.parse(event.data);
-
+            
             // Manage message
             const { type, response } = incomingMessage;
     
@@ -61,10 +61,6 @@ export const socketConnection = (setIsSocketConnected) => {
     };
 }
 
-    
-
-    
-
 // Function to handle different message types
 function handleMessageResponse(type, response) {
     switch (type) {
@@ -80,10 +76,29 @@ function handleMessageResponse(type, response) {
         case 'received-message':
             console.log("📨 New Message:", response);
             break;
-        case 'get-chats':
-            console.log("🔹 Chats:");
+        case 'obtained-chats':
+            console.log("🔹 Chats:", response);
             break;
         default:
             console.warn("⚠️ Unknown message type received:", type);
     }
 }
+
+// Verifie connection
+const verifieConnection = () => {
+    if (ws && ws.readyState === WebSocket.CLOSED && ws.readyState === WebSocket.CLOSING) {
+        console.warn('WebSocket not connected. Attempting to reconnect...');
+        socketConnection();
+    }
+};
+
+// Get chats
+export const getChats = (user) => {
+    verifieConnection();
+    const data = JSON.parse(user);
+    ws.send(JSON.stringify({
+        type: "get-chats",
+        clientID: data
+    }));
+
+};

@@ -6,12 +6,10 @@ import { useNavigation } from '@react-navigation/native';
 
 // API
 import { api } from '../../api/url';
-import { getChats } from '../../api/websocket/chats';
-import { socketConnection } from '../../api/websocket/connection';
+import { socketConnection, getChats } from '../../api/websocket/websocket';
 
 // Theme
 import generalColors from '../../styles/generalColors';
-import { use } from 'react';
 
 export const Inbox = () => {
     // State variables to store chat data, user token, and grouped chats
@@ -47,17 +45,17 @@ export const Inbox = () => {
         }, [localUserToken]);
 
     //Get chats
-    // useEffect(() => {
-    //     if (isSocketConnected === true) {
-    //         try {
-    //             const data = getChats(localUserToken);
-    //             console.log('🔹 Chats:', data);
-    //            setChatContent(data);
-    //         }catch (error) {
-    //             console.error('Error getting chats:', error);
-    //         }
-    //     }
-    // }, [localUserToken, isSocketConnected])
+    useEffect(() => {
+        if (isSocketConnected === false) return;
+        try {
+            const data = JSON.stringify(localUserToken)
+            getChats(data);
+            // setChatContent(data);
+        }catch (error) {
+            console.error('Error getting chats:', error);
+        }
+        
+    })
 
     // Group chats by other user when chatContent changes
     useEffect(() => {
