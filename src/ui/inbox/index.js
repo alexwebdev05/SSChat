@@ -5,7 +5,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
 // API
-import { api } from '../../api/connection';
+import { api } from '../../api/url';
+import { getChats } from '../../api/websocket/chats';
+import { socketConnection } from '../../api/websocket/connection';
 
 // Theme
 import generalColors from '../../styles/generalColors';
@@ -16,6 +18,7 @@ export const Inbox = () => {
     const [chatContent, setChatContent] = useState([]);
     const [localUserToken, setLocalUserToken] = useState('');
     const [groupedChats, setGroupedChats] = useState({});
+    const [isSocketConnected, setIsSocketConnected] = useState(false);
 
     const navigation = useNavigation();
 
@@ -31,45 +34,30 @@ export const Inbox = () => {
         getLocalUser();
     }, []);
 
-    // Fetch chats periodically from the API
-    useEffect(() => {
-        if (!localUserToken) return;
-
-        const fetchChats = async () => {
-            try {
-                const response = await fetch(api.getChats, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ user1: localUserToken }),
-                });
-
-                if (!response.ok) {
-                    throw new Error('API response failed');
-                }
-
-                const responseData = await response.json();
-                setChatContent(responseData);
-            } catch (error) {
-                console.error('Error fetching chats: ', error);
-            }
-        };
-
-        fetchChats();
-        // Set up an interval to fetch chats every 2 seconds
-        const interval = setInterval(fetchChats, 2000);
-
-        // Clean up the interval on component unmount
-        return () => clearInterval(interval);
-    }, [localUserToken]);
-
     // Websocket connection
     useEffect(() => {
-        if (!localUserToken) return;
+
+        // Check local user UUID
+        if (!localUserToken || isSocketConnected) return;
+
+
         const cleanupWebSocket = socketConnection(setIsSocketConnected);
-        return cleanupWebSocket; 
-    });
+        return cleanupWebSocket;
+
+        }, [localUserToken]);
+
+    //Get chats
+    // useEffect(() => {
+    //     if (isSocketConnected === true) {
+    //         try {
+    //             const data = getChats(localUserToken);
+    //             console.log('🔹 Chats:', data);
+    //            setChatContent(data);
+    //         }catch (error) {
+    //             console.error('Error getting chats:', error);
+    //         }
+    //     }
+    // }, [localUserToken, isSocketConnected])
 
     // Group chats by other user when chatContent changes
     useEffect(() => {
