@@ -1,4 +1,5 @@
 import { api } from '../url';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 let ws = null;
 
@@ -77,8 +78,41 @@ function handleMessageResponse(type, response) {
             console.log("📨 New Message:", response);
             break;
         case 'obtained-chats':
-            console.log("🔹 Chats:", response);
+            const storeData = async (response) => {
+                try {
+                    await AsyncStorage.setItem('chats', JSON.stringify(response));
+                    console.log('Chats saved locally');
+                } catch(error) {
+                    console.error('Error saving chats', error);
+                }
+            }
+            storeData(response);
+            
             break;
+        case 'checked-token':
+            const { token, username} = response;
+            const updateOtherUsername = async (token, username) => {
+                try {
+                    // Get stored chats
+                    const storedChats = await AsyncStorage.getItem('chats');
+                    if (!storedChats) return console.log('No chats found');
+
+                    let chats = JSON.parse(storedChats);
+
+                    // Replace other user ID by his name
+                    chats = chats.map(chat => ({
+                        ...chat,
+                        user1: chat.user1 === uuid ? newName : chat.user1,
+                        user2: chat.user2 === uuid ? newName : chat.user2
+                    }));
+
+                    await AsyncStorage.setItem('chats', JSON.stringify(chats));
+                    console.log('Chats updated successfully:', chats);
+                } catch(error) {
+                    console.error('Error updating chats:', error);
+                }
+            }
+            updateOtherUsername
         default:
             console.warn("⚠️ Unknown message type received:", type);
     }
@@ -102,3 +136,16 @@ export const getChats = (user) => {
     }));
 
 };
+
+// Check token
+export const checkToken = (otherUserToken) => {
+    verifieConnection();
+    const data = JSON.parse(otherUserToken);
+    console.log(data)
+    ws.send(JSON.stringify({
+        type: "check-token",
+        clientID: clientID,
+        otherClientID: data
+    }))
+    
+}

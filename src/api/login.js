@@ -1,5 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { api } from './connection';
+import { api } from './url';
+
+import { storeUserData } from '../utils/storeData';
 
 export const signIn = async (email, password, onLogin) => {
 
@@ -10,6 +11,7 @@ export const signIn = async (email, password, onLogin) => {
 
     try {
         // Send data to api
+        console.log(api.checkUsers)
         const response = await fetch(api.checkUsers, {
             method: 'POST',
             headers: {
@@ -45,15 +47,3 @@ export const signIn = async (email, password, onLogin) => {
         return { status: 'error', message: error.message };
     }
 }
-
-// Save data locally
-    const storeUserData = async (userData) => {
-        try {
-            // Saveing data
-            await AsyncStorage.setItem('userData', JSON.stringify(userData));
-            console.log('User data saved locally');
-            // catch errors
-        } catch (error) {
-            console.error('Error saving user data', error);
-        }
-    };

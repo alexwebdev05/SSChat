@@ -1,16 +1,16 @@
 import { API } from '@env'
 
 export const api = {
-    url: `https://${API}/api`,
+    url: `http://${API}/api`,
     
     // Users
-    registerUser: `https://${API}/api/users/registeruser`,
-    checkUsers: `https://${API}/api/users/checkuser`,
-    checkToken: `https://${API}/api/users/checktoken`,
+    registerUser: `http://${API}/api/users/registeruser`,
+    checkUsers: `http://${API}/api/users/checkuser`,
+    checkToken: `http://${API}/api/users/checktoken`,
 
     // Chats
-    newChat: `https://${API}/api/chats/newchat`,
-    getChats: `https://${API}/api/chats/getchats`,
+    newChat: `http://${API}/api/chats/newchat`,
+    getChats: `http://${API}/api/chats/getchats`,
 
     // WebSocket
     websocket: `ws://192.168.1.34:8080`

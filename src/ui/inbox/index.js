@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 
 // API
 import { api } from '../../api/url';
-import { socketConnection, getChats } from '../../api/websocket/websocket';
+import { socketConnection, getChats, checkToken } from '../../api/websocket/websocket';
 
 // Theme
 import generalColors from '../../styles/generalColors';
@@ -44,71 +44,60 @@ export const Inbox = () => {
 
         }, [localUserToken]);
 
-    //Get chats
+    // Set local chats
+    useEffect(() => {
+        const getLocalChats =  async () => {
+            const chats = await AsyncStorage.getItem('chats');
+            setChatContent(chats)
+        }
+        getLocalChats()
+    }, [])
+
+    // Request new chats
     useEffect(() => {
         if (isSocketConnected === false) return;
         try {
             const data = JSON.stringify(localUserToken)
             getChats(data);
-            // setChatContent(data);
         }catch (error) {
             console.error('Error getting chats:', error);
         }
-        
     })
 
     // Group chats by other user when chatContent changes
     useEffect(() => {
         const groupChats = async () => {
+            
+            // Check if exist chats
+            if ( chatContent.length === 0 ) return;
+
+            // Parse chats to JSON
+            const parsedChatContent = JSON.parse(chatContent);
+
             const grouped = {};
 
-            for (const chat of chatContent) {
-                // Determine the other user in the chat
-                const otherUser = chat.user1 === localUserToken ? chat.user2 : chat.user1;
-                const otherUserData = await getOtherUser(otherUser);
+            // 
+            for (const chat of parsedChatContent) {
+
+                const otherUser = chat.username;
 
                 // Group chats by other user's username
-                if (!grouped[otherUserData.username]) {
-                    grouped[otherUserData.username] = {
-                        otherUserToken: otherUserData.token,
+                if (!grouped[otherUser]) {
+                    grouped[otherUser] = {
+                        otherUserToken: chat.userID,
                         roomToken: chat.token,
                         chats: [],
                     };
                 }
 
-                grouped[otherUserData.username].chats.push(chat);
+                grouped[otherUser].chats.push(chat);
             }
 
             setGroupedChats(grouped);
         };
 
-        if (chatContent.length > 0) {
-            groupChats();
-        }
+        groupChats();
     }, [chatContent]);
-
-    // Fetch other user's data from the API
-    const getOtherUser = async (token) => {
-        try {
-            const response = await fetch(api.checkToken, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ token: token }),
-            });
-
-            if (!response.ok) {
-                throw new Error('API response failed');
-            }
-
-            const responseData = await response.json();
-            return responseData;
-        } catch (error) {
-            console.error('Error fetching username: ', error);
-            return { username: 'Unknown User', token: '' };
-        }
-    };
 
     // Navigate to Chat screen with selected chat details
     const handleNavigation = (otherUsername, otherUserToken, roomToken) => {
