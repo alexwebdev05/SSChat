@@ -14,11 +14,10 @@ userData
 chats
 {[
     {
+        "username": "<string>",
+        "userID": "<UUID>",
         "created_at": "<time>",
-        "id": "<int>",
         "token": "<UUID>",
-        "user1": "<UUID>",
-        "user2": "<UUID>"
     },
     {...}
 ]}

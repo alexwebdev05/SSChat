@@ -5,7 +5,6 @@ export const storeUserData = async (userData) => {
     try {
         // Saveing data
         await AsyncStorage.setItem('userData', JSON.stringify(userData));
-        console.log('User data saved locally');
         // catch errors
     } catch (error) {
         console.error('Error saving user data', error);
