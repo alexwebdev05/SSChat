@@ -27,14 +27,8 @@ export default function Chat({ route }) {
     // New messages
     const [promisedMessage, setPromisedMessage] = useState('');
 
-    // Websocket connection
-    const [isSocketConnected, setIsSocketConnected] = useState(false);
-
     // Scroll view reference
     const scrollViewRef = useRef(null);
-
-    // Other user token and name | Room token
-    const { otherUsername, otherUserToken, roomToken} = route.params;
 
     // To detect when user navigates to other screen
     const nav = useNavigation();
@@ -42,6 +36,8 @@ export default function Chat({ route }) {
     // To detect when user is watching the component
     const isFocused = useIsFocused();
 
+    // Other user token and name | Room token
+    const { otherUsername, otherUserToken, roomToken} = route.params;
 
     // ----- Effects -----
 

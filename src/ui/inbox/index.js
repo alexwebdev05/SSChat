@@ -6,10 +6,14 @@ import { useNavigation } from '@react-navigation/native';
 
 // API
 import { api } from '../../api/url';
-import { socketConnection, getChats, checkToken } from '../../api/websocket/websocket';
+import { socketConnection } from '../../api/websocket/websocket';
+import { getChats } from '../../api/websocket/chats';
 
 // Theme
 import generalColors from '../../styles/generalColors';
+
+// Utils
+import { getUserData } from '../../utils/storeData';
 
 export const Inbox = () => {
     // State variables to store chat data, user token, and grouped chats
@@ -17,19 +21,24 @@ export const Inbox = () => {
     const [localUserToken, setLocalUserToken] = useState('');
     const [groupedChats, setGroupedChats] = useState({});
     const [isSocketConnected, setIsSocketConnected] = useState(false);
+    const [socket, setSocket] = useState(null)
 
     const navigation = useNavigation();
 
     // Fetch local user data from AsyncStorage
     useEffect(() => {
-        const getLocalUser = async () => {
-            const localData = await AsyncStorage.getItem('userData');
-            if (localData) {
-                const userData = JSON.parse(localData);
+
+        const localUser = async () => {
+            try {
+                const userData = await getUserData();
                 setLocalUserToken(userData.token);
+            } catch (error) {
+                console.error("Error fetching user data:", error);
             }
         };
-        getLocalUser();
+    
+        localUser();
+        
     }, []);
 
     // Websocket connection
@@ -39,14 +48,16 @@ export const Inbox = () => {
         if (!localUserToken || isSocketConnected) return;
 
 
-        const cleanupWebSocket = socketConnection(setIsSocketConnected);
+        const cleanupWebSocket = socketConnection(setIsSocketConnected, setSocket);
+
         return cleanupWebSocket;
 
         }, [localUserToken]);
 
-    // Set local chats
+    // Set chats
     useEffect(() => {
         const getLocalChats =  async () => {
+            // Local chats
             const chats = await AsyncStorage.getItem('chats');
             setChatContent(chats)
         }
@@ -55,14 +66,10 @@ export const Inbox = () => {
 
     // Request new chats
     useEffect(() => {
-        if (isSocketConnected === false) return;
-        try {
-            const data = JSON.stringify(localUserToken)
-            getChats(data);
-        }catch (error) {
-            console.error('Error getting chats:', error);
+        if (localUserToken && socket && typeof socket.send === 'function' ) {
+            getChats(localUserToken, socket)
         }
-    })
+    }, [localUserToken, socket])
 
     // Group chats by other user when chatContent changes
     useEffect(() => {

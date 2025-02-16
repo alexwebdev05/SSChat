@@ -4,28 +4,27 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 let ws = null;
 
 // Create connection
-export const socketConnection = (setIsSocketConnected) => {
+export const socketConnection = (setIsSocketConnected, setSocket) => {
 
     if (ws && ws.readyState !== WebSocket.CLOSED && ws.readyState !== WebSocket.CLOSING) {
         console.log('🔄 WebSocket ya está conectado.');
-        
-        return;
+        return Promise.resolve(ws);
     }
 
     ws = new WebSocket(api.websocket);
 
     ws.onopen = () => {
-
         console.log('✅ WebSocket connection established.');
         setIsSocketConnected(true);
+        setSocket(ws)
     };
 
     ws.onclose = () => {
         console.log('❌ WebSocket connection closed.');
         setIsSocketConnected(false);
-        ws = null;
+        setSocket(null)
         setTimeout(() => {
-            if (!ws) socketConnection(setIsSocketConnected);
+            if (!ws || ws.readyState === WebSocket.CLOSED) socketConnection(setIsSocketConnected, setSocket);
         }, 1000);
     };
 
@@ -51,16 +50,15 @@ export const socketConnection = (setIsSocketConnected) => {
     // Cleanup WebSocket connection on unmount
     return () => {
         if (ws) {
-
-            // Prevent automatic reconnections
+            console.log("🔌 Cleaning up WebSocket connection...");
             ws.onclose = null;
-
-            // Close WebSocket connection
             ws.close();
             ws = null;
+            setSocket(null);
         }
     };
 }
+
 
 // Function to handle different message types
 function handleMessageResponse(type, response) {
@@ -126,22 +124,10 @@ const verifieConnection = () => {
     }
 };
 
-// Get chats
-export const getChats = (user) => {
-    verifieConnection();
-    const data = JSON.parse(user);
-    ws.send(JSON.stringify({
-        type: "get-chats",
-        clientID: data
-    }));
-
-};
-
 // Check token
 export const checkToken = (otherUserToken) => {
     verifieConnection();
     const data = JSON.parse(otherUserToken);
-    console.log(data)
     ws.send(JSON.stringify({
         type: "check-token",
         clientID: clientID,
