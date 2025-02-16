@@ -11,15 +11,6 @@ export const storeUserData = async (userData) => {
     }
 };
 
-// Get user data
-export const getUserData = async () => {
-    const localUserData = await AsyncStorage.getItem('userData');
-    if (localUserData) {
-        const userData = JSON.parse(localUserData);
-        return userData
-    }
-};
-
 // Check login status
 export const checkLoginStatus = async (setIsLoggedIn) => {
     try {

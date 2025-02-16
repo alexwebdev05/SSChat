@@ -10,7 +10,10 @@ import generalColors from '../styles/generalColors';
 import { StatusBar } from 'expo-status-bar';
 
 // Api
-import { socketConnection, enterRoom, leaveRoom, getMessages, sendMessage, closeWebSocket } from '../api/websocket/messageSocket';
+import { getWebSocket } from '../api/websocket/websocket';
+import { enterRoom, leaveRoom } from '../api/websocket/rooms';
+import { getMessages } from '../api/websocket/chats';
+import { sendMessage } from '../api/websocket/messages';
 
 // Utils
 import { dateFormatter } from '../utils/dateFormatter';
@@ -39,6 +42,9 @@ export default function Chat({ route }) {
     // Other user token and name | Room token
     const { otherUsername, otherUserToken, roomToken} = route.params;
 
+    const [isSocketConnected, setIsSocketConnected] = useState(false);
+    const [socket, setSocket] = useState(null);
+
     // ----- Effects -----
 
     // Get local user data | Socket connection
@@ -52,28 +58,22 @@ export default function Chat({ route }) {
         };
         getLocalUser();
 
-        // Socket connection
-        const cleanupWebSocket = socketConnection(setMessages, setIsSocketConnected);
-        return cleanupWebSocket; 
     }, []);
+
+    // Get socket
+    useEffect(() => {
+        const ws = getWebSocket()
+        setSocket(ws)
+    })
 
     // Enter room
     useEffect(() => {
         // Checks if the user is loaded and socket is connected
-        if (!localUser || !isSocketConnected || !isFocused) return;
+        if (!socket || !localUser || !isFocused) return;
 
         // Enter room
-        enterRoom(localUser, roomToken);
-    }, [localUser, isSocketConnected]);
-
-    // Get messages when otherUsername, localUser, and socket are ready
-    useEffect(() => {
-        if (!otherUsername || !localUser || !isSocketConnected || !isFocused) return;
-
-        const cleanupWebSocket = socketConnection(setMessages, setIsSocketConnected);
-        getMessages(localUser, otherUserToken);
-        return cleanupWebSocket; // This function will be called when the component unmounts
-    }, [otherUsername, localUser, isSocketConnected, isFocused]);
+        enterRoom( socket, localUser, roomToken);
+    }, [socket, localUser, isFocused]);
 
 
     // Move to bottom of the chat
@@ -90,10 +90,7 @@ export default function Chat({ route }) {
             e.preventDefault();
 
             // Leave chat room
-            leaveRoom(localUser, roomToken);
-
-            // Leave websocket
-            closeWebSocket();
+            leaveRoom(socket, localUser, roomToken);
 
             setMessages([])
 
@@ -107,10 +104,10 @@ export default function Chat({ route }) {
     // ----- Functions -----
 
     // Send message
-    const send = (promisedMessage) => {
-        sendMessage(localUser, otherUserToken, roomToken, promisedMessage);
-        setPromisedMessage('');
-    };
+    // const send = (promisedMessage) => {
+    //     sendMessage(socket, localUser, otherUserToken, roomToken, promisedMessage);
+    //     setPromisedMessage('');
+    // };
 
     // ----- DOM -----
     return (

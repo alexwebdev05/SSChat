@@ -12,9 +12,6 @@ import { getChats } from '../../api/websocket/chats';
 // Theme
 import generalColors from '../../styles/generalColors';
 
-// Utils
-import { getUserData } from '../../utils/storeData';
-
 export const Inbox = () => {
     // State variables to store chat data, user token, and grouped chats
     const [chatContent, setChatContent] = useState([]);
@@ -29,12 +26,9 @@ export const Inbox = () => {
     useEffect(() => {
 
         const localUser = async () => {
-            try {
-                const userData = await getUserData();
-                setLocalUserToken(userData.token);
-            } catch (error) {
-                console.error("Error fetching user data:", error);
-            }
+            const userData = await AsyncStorage.getItem('userData');
+            const parsedData = JSON.parse(userData)
+            setLocalUserToken(parsedData.token);
         };
     
         localUser();
