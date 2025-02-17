@@ -11,13 +11,13 @@ export const enterRoom = (ws, localUser, roomToken) => {
 };
 
 // Leave the room
-export const leaveRoom = (ws, sender, roomToken) => {
+export const leaveRoom = (ws, localUser, roomToken) => {
     const send = setInterval(() => {
         clearInterval(send);
         ws.send(JSON.stringify({
             type: "leave-room",
             roomToken: roomToken,
-            clientID: sender
+            clientID: localUser
         }));
     }, 500);
 };

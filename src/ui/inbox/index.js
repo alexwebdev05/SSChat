@@ -11,6 +11,7 @@ import { getChats } from '../../api/websocket/chats';
 
 // Theme
 import generalColors from '../../styles/generalColors';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export const Inbox = () => {
     // State variables to store chat data, user token, and grouped chats
@@ -48,15 +49,20 @@ export const Inbox = () => {
 
         }, [localUserToken]);
 
-    // Set chats
+    // Set Local chats
     useEffect(() => {
+
+        // Get local chats
         const getLocalChats =  async () => {
-            // Local chats
             const chats = await AsyncStorage.getItem('chats');
             setChatContent(chats)
         }
-        getLocalChats()
-    }, [])
+        
+        // Interval to update chats
+        setInterval(() => {
+            getLocalChats()
+        }, 1000);
+    })
 
     // Request new chats
     useEffect(() => {

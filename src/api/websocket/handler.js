@@ -1,3 +1,5 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 // Function to handle different message types
 export function handleMessageResponse(type, response) {
     switch (type) {
