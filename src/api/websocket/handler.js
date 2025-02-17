@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Function to handle different message types
 export function handleMessageResponse(type, userID, response) {
+
     switch (type) {
         case 'joined-room':
             console.log("🔹 Joined Room:", response);
@@ -60,6 +61,8 @@ export function handleMessageResponse(type, userID, response) {
                 }
             }
             updateOtherUsername
+        case 'error':
+            console.log(response)
         default:
             console.warn("⚠️ Unknown message type received:", type);
     }

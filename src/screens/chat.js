@@ -80,38 +80,52 @@ export default function Chat({ route }) {
     }, [socket, localUser, isFocused]);
 
     // Store new messages locally
-    useEffect(() => {
-        // Checks if the user is loaded and socket is connected
-        if (!socket || !localUser || !isFocused) return;
+useEffect(() => {
+    // Checks if the user is loaded and socket is connected
+    if (!socket || !localUser) return;
 
-        // Get messages
-        getMessages(localUser, otherUserToken);
+    // Fetch messages once or on socket change
+    const fetchMessages = async () => {
+        await getMessages(localUser, otherUserToken);
+    };
 
-    }, [socket, localUser, isFocused]);
+    // Fetch messages when component mounts
+    fetchMessages();
 
-    // Get messages
-    useEffect(() => {
-        // Interval to update messages
-        const getStoredMessages = async () => {
-            try {
-                // Get stored messages
-                const storedMessages = await AsyncStorage.getItem(otherUserToken);
-                if (!storedMessages) return console.log('No messages found');
-    
-                    // Set messages
-                    const messages = JSON.parse(storedMessages);
-                    setMessages(messages);
-                } catch(error) {
-                    console.error('Error obtaining messages', error);
+    // Cleanup if needed (optional, depending on how `getMessages` works)
+    return () => {};
+}, [socket, localUser, otherUserToken]);
+
+// Get messages from AsyncStorage
+useEffect(() => {
+    const getStoredMessages = async () => {
+        try {
+            // Get stored messages
+            const storedMessages = await AsyncStorage.getItem(otherUserToken);
+            if (!storedMessages) {
+                console.log('No messages found');
+                return;
             }
-        }
-        
-        const interval = setInterval(() => {
-            getStoredMessages();
-        }, 500);
 
-        return () => clearInterval(interval);
-    }, [otherUserToken])
+            // Set messages
+            const messages = JSON.parse(storedMessages);
+            setMessages(messages);
+        } catch (error) {
+            console.error('Error obtaining messages', error);
+        }
+    };
+
+    // Fetch messages immediately when `otherUserToken` changes
+    getStoredMessages();
+
+    // Optionally, you can use a more appropriate frequency instead of polling every 500ms
+    const interval = setInterval(() => {
+        getStoredMessages();
+    }, 500);
+
+    return () => clearInterval(interval);
+}, [otherUserToken]);
+
 
 
     // Move to bottom of the chat
@@ -143,10 +157,10 @@ export default function Chat({ route }) {
     // ----- Functions -----
 
     // Send message
-    // const send = (promisedMessage) => {
-    //     sendMessage(socket, localUser, otherUserToken, roomToken, promisedMessage);
-    //     setPromisedMessage('');
-    // };
+    const send = async (promisedMessage) => {
+        sendMessage(localUser, otherUserToken, roomToken, promisedMessage);
+        setPromisedMessage('');
+    };
 
     // ----- DOM -----
     return (
