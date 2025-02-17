@@ -21,3 +21,15 @@ chats
     },
     {...}
 ]}
+
+<userID> (Contains user messages)
+[
+    {
+        "created_at": "<date>",
+        "id": <int>,
+        "message": "<string>",
+        "receiver": "<UUID>",
+        "sender": "<UUID>"
+    },
+    {...}
+]

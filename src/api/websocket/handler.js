@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Function to handle different message types
-export function handleMessageResponse(type, response) {
+export function handleMessageResponse(type, userID, response) {
     switch (type) {
         case 'joined-room':
             console.log("🔹 Joined Room:", response);
@@ -10,7 +10,16 @@ export function handleMessageResponse(type, response) {
             console.log("🚪 Left Room:", response);
             break;
         case 'obtained-messages':
-            console.log("📩 Obtained Messages:", response);
+            const storeMessages = async (response) => {
+                try {
+                    await AsyncStorage.removeItem(userID);
+                    await AsyncStorage.setItem(userID, JSON.stringify(response));
+                    console.log('Messages saved locally');
+                } catch(error) {
+                    console.error('Error saving messages', error);
+                }
+            }
+            storeMessages(response);
             break;
         case 'received-message':
             console.log("📨 New Message:", response);

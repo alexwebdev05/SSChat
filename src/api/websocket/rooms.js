@@ -1,7 +1,10 @@
+import { getWebSocket } from "./websocket";
+
 // Enter the room
-export const enterRoom = (ws, localUser, roomToken) => {
+export const enterRoom = ( localUser, roomToken) => {
     const send = setInterval(() => {
         clearInterval(send);
+        const ws = getWebSocket()
         ws.send(JSON.stringify({
             type: "join-room",
             roomToken: roomToken,
@@ -11,9 +14,10 @@ export const enterRoom = (ws, localUser, roomToken) => {
 };
 
 // Leave the room
-export const leaveRoom = (ws, localUser, roomToken) => {
+export const leaveRoom = (localUser, roomToken) => {
     const send = setInterval(() => {
         clearInterval(send);
+        const ws = getWebSocket()
         ws.send(JSON.stringify({
             type: "leave-room",
             roomToken: roomToken,

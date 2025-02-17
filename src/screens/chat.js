@@ -12,8 +12,7 @@ import { StatusBar } from 'expo-status-bar';
 // Api
 import { getWebSocket } from '../api/websocket/websocket';
 import { enterRoom, leaveRoom } from '../api/websocket/rooms';
-import { getMessages } from '../api/websocket/chats';
-import { sendMessage } from '../api/websocket/messages';
+import { sendMessage, getMessages } from '../api/websocket/messages';
 
 // Utils
 import { dateFormatter } from '../utils/dateFormatter';
@@ -42,7 +41,6 @@ export default function Chat({ route }) {
     // Other user token and name | Room token
     const { otherUsername, otherUserToken, roomToken} = route.params;
 
-    const [isSocketConnected, setIsSocketConnected] = useState(false);
     const [socket, setSocket] = useState(null);
 
     // ----- Effects -----
@@ -62,9 +60,15 @@ export default function Chat({ route }) {
 
     // Get socket
     useEffect(() => {
-        const ws = getWebSocket()
-        setSocket(ws)
-    })
+        const wsUpdater = () => {
+            const ws = getWebSocket()
+            setSocket(ws)
+        }
+        
+        const interval = setInterval(wsUpdater, 500);
+
+        return () => clearInterval(interval);
+    }, [])
 
     // Enter room
     useEffect(() => {
@@ -72,8 +76,42 @@ export default function Chat({ route }) {
         if (!socket || !localUser || !isFocused) return;
 
         // Enter room
-        enterRoom( socket, localUser, roomToken);
+        enterRoom( localUser, roomToken);
     }, [socket, localUser, isFocused]);
+
+    // Store new messages locally
+    useEffect(() => {
+        // Checks if the user is loaded and socket is connected
+        if (!socket || !localUser || !isFocused) return;
+
+        // Get messages
+        getMessages(localUser, otherUserToken);
+
+    }, [socket, localUser, isFocused]);
+
+    // Get messages
+    useEffect(() => {
+        // Interval to update messages
+        const getStoredMessages = async () => {
+            try {
+                // Get stored messages
+                const storedMessages = await AsyncStorage.getItem(otherUserToken);
+                if (!storedMessages) return console.log('No messages found');
+    
+                    // Set messages
+                    const messages = JSON.parse(storedMessages);
+                    setMessages(messages);
+                } catch(error) {
+                    console.error('Error obtaining messages', error);
+            }
+        }
+        
+        const interval = setInterval(() => {
+            getStoredMessages();
+        }, 500);
+
+        return () => clearInterval(interval);
+    }, [otherUserToken])
 
 
     // Move to bottom of the chat
@@ -90,7 +128,8 @@ export default function Chat({ route }) {
             e.preventDefault();
 
             // Leave chat room
-            leaveRoom(socket, localUser, roomToken);
+            leaveRoom(localUser, roomToken);
+
 
             setMessages([])
 

@@ -27,12 +27,26 @@ export const socketConnection = (setIsSocketConnected, setSocket) => {
         }, 1000);
     };
 
-    ws.onerror = (error) => console.error('⚠️ WebSocket error:', error);
+    ws.onerror = (error) => {
+        console.log('⚠️ WebSocket error:', error);
+
+        if (ws) {
+            ws.onclose = null;
+            ws.close();
+            ws = null;
+            setSocket(null);
+        }
+    
+        setTimeout(() => {
+            console.log('🔄 Reintentando conexión WebSocket después de error...');
+            socketConnection(setIsSocketConnected, setSocket);
+        }, 1000);
+    }
 
     ws.onmessage = (event) => {
         try {
             const incomingMessage = JSON.parse(event.data);
-            handleMessageResponse(incomingMessage.type, incomingMessage.response);
+            handleMessageResponse(incomingMessage.type, incomingMessage.userID, incomingMessage.response);
         } catch (error) {
             console.error("Error parsing WebSocket message:", error);
         }
