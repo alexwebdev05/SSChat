@@ -2,6 +2,9 @@ import { api } from './url';
 
 import { storeUserData } from '../utils/storeData';
 
+// ----- Exported functions ----- //
+
+// Sign in function
 export const signIn = async (email, password, onLogin) => {
 
     const jsonData = {
