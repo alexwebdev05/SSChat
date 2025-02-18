@@ -1,5 +1,36 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import UUID from 'react-native-uuid';
 import { getWebSocket } from "./websocket";
+import { EventEmitter } from 'events';
+
+export const messagesStore = {
+
+    // Message collection
+    messages: {},
+
+    // Events manager
+    eventEmitter: new EventEmitter(),
+
+    // Replace by new messages
+    replaceMessages(clientUUID, newMessages) {
+        this.messages[clientUUID] = newMessages;
+        this.eventEmitter.emit('updateMessages', this.messages);
+    },
+
+    // Add new message
+    addMessage(clientUUID, newMessage) {
+        if (!this.messages[clientUUID]) {
+            this.messages[clientUUID] = [];
+        }
+        this.messages[clientUUID].push(newMessage);
+        this.eventEmitter.emit('updateMessages', this.messages);
+    },
+
+    // Get user messages
+    getMessages(clientUUID) {
+        return this.messages[clientUUID] || [];
+    },
+};
 
 // Get messages
 export const getMessages = async (localUser, receiver) => {
@@ -17,39 +48,27 @@ export const getMessages = async (localUser, receiver) => {
 // Send messages
 export const sendMessage = async (sender, receiver, roomToken, message) => {
 
+    const messageId = UUID.v4();
+    // Add message to event manager
+    messagesStore.addMessage(receiver, {
+        id: messageId,
+        sender: sender,
+        receiver: receiver,
+        message: message,
+        created_at: new Date()
+    })
+
+    
+
     // Getting websocket
     const ws = getWebSocket()
-    console.log('enviando mensaje')
-    // Sending data
+
     ws.send(JSON.stringify({
         type: "send-message",
         clientID: sender,
         otherClientID: receiver,
         roomToken: roomToken,
-        message: message
+        message: message,
+        id: messageId
     }));
-
-    // Pushing message locally
-    // try {
-    //     // Get stored messages
-    //     const storedMessages = await AsyncStorage.getItem(receiver)
-
-    //     // If the array of messages does not exist, it makes a new one
-    //     let messages = storedMessages ? JSON.parse(storedMessages) : [];
-
-    //     // Add new message
-    //     messages.push({
-    //         sender: sender,
-    //         receiver: receiver,
-    //         message: message,
-    //         created_at: new Date()
-    //     });
-
-    //     // Replace old messages with new messages
-    //     await AsyncStorage.setItem(receiver, JSON.stringify(messages));
-        
-
-    // } catch(error) {
-    //     console.log('Error pushing message.')
-    // }
 };

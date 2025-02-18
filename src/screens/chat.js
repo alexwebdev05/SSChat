@@ -1,5 +1,5 @@
 // React libraries
-import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, Dimensions, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, Dimensions, ScrollView, AppState } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Shadow } from 'react-native-shadow-2';
@@ -8,6 +8,7 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 // Theme
 import generalColors from '../styles/generalColors';
 import { StatusBar } from 'expo-status-bar';
+import { messagesStore } from '../api/websocket/messages';
 
 // Api
 import { getWebSocket } from '../api/websocket/websocket';
@@ -79,53 +80,51 @@ export default function Chat({ route }) {
         enterRoom( localUser, roomToken);
     }, [socket, localUser, isFocused]);
 
-    // Store new messages locally
-useEffect(() => {
-    // Checks if the user is loaded and socket is connected
-    if (!socket || !localUser) return;
+    // Request messages
+    useEffect(() => {
+        // Checks if the user is loaded and socket is connected
+        if (!socket || !localUser) return;
 
-    // Fetch messages once or on socket change
-    const fetchMessages = async () => {
-        await getMessages(localUser, otherUserToken);
-    };
+        // Fetch messages once or on socket change
+        const fetchMessages = async () => {
+            getMessages(localUser, otherUserToken);
+        };
 
-    // Fetch messages when component mounts
-    fetchMessages();
+        // Fetch messages when component mounts
+        fetchMessages();
 
-    // Cleanup if needed (optional, depending on how `getMessages` works)
-    return () => {};
-}, [socket, localUser, otherUserToken]);
+        // Cleanup if needed (optional, depending on how `getMessages` works)
+        return () => {};
+    }, [socket, localUser, otherUserToken]);
 
-// Get messages from AsyncStorage
-useEffect(() => {
-    const getStoredMessages = async () => {
-        try {
-            // Get stored messages
-            const storedMessages = await AsyncStorage.getItem(otherUserToken);
-            if (!storedMessages) {
-                console.log('No messages found');
-                return;
-            }
+    // Refresh messages
+    useEffect(() => {
+        // Suscribirse al evento de actualización de mensajes
+        const handleMessagesUpdate = () => {
+            // Actualiza el estado con los nuevos mensajes
+            setMessages(messagesStore.getMessages(otherUserToken));
+        };
 
-            // Set messages
-            const messages = JSON.parse(storedMessages);
-            setMessages(messages);
-        } catch (error) {
-            console.error('Error obtaining messages', error);
-        }
-    };
+        // Escuchar cambios de mensajes en messagesStore
+        messagesStore.eventEmitter.on('updateMessages', handleMessagesUpdate);
 
-    // Fetch messages immediately when `otherUserToken` changes
-    getStoredMessages();
+        // Cleanup cuando el componente se desmonte
+        return () => {
+            messagesStore.eventEmitter.off('updateMessages', handleMessagesUpdate);
+        };
+    }, []);
 
-    // Optionally, you can use a more appropriate frequency instead of polling every 500ms
-    const interval = setInterval(() => {
-        getStoredMessages();
-    }, 500);
-
-    return () => clearInterval(interval);
-}, [otherUserToken]);
-
+    // Log messages
+    // useEffect(() => {
+    //     // Establece un intervalo que haga un console.log cada segundo
+    //     const interval = setInterval(() => {
+    //       console.log('Messages:', messagesStore.messages);  // Muestra los mensajes almacenados
+    //     }, 1000); // Ejecuta cada 1000 ms (1 segundo)
+    
+    //     // Limpia el intervalo cuando el componente se desmonte
+    //     return () => clearInterval(interval);
+    
+    //   }, []);
 
 
     // Move to bottom of the chat

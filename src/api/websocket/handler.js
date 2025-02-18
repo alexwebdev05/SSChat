@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { messagesStore } from './messages';
 
 // Function to handle different message types
 export function handleMessageResponse(type, userID, response) {
@@ -11,6 +12,7 @@ export function handleMessageResponse(type, userID, response) {
             console.log("🚪 Left Room:", response);
             break;
         case 'obtained-messages':
+            messagesStore.replaceMessages(userID, response);
             const storeMessages = async (response) => {
                 try {
                     await AsyncStorage.removeItem(userID);
@@ -24,6 +26,7 @@ export function handleMessageResponse(type, userID, response) {
             break;
         case 'received-message':
             console.log("📨 New Message:", response);
+            messagesStore.addMessage(response.sender, response)
             break;
         case 'obtained-chats':
             const storeData = async (response) => {
@@ -61,7 +64,8 @@ export function handleMessageResponse(type, userID, response) {
                 }
             }
             updateOtherUsername
-        case 'error':
+            break
+        case 'user-joined':
             console.log(response)
         default:
             console.warn("⚠️ Unknown message type received:", type);
