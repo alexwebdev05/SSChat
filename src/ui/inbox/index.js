@@ -5,116 +5,106 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
 // API
-import { api } from '../../api/connection';
+import { api } from '../../api/url';
+import { socketConnection } from '../../api/websocket/websocket';
+import { getChats } from '../../api/websocket/chats';
 
 // Theme
 import generalColors from '../../styles/generalColors';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export const Inbox = () => {
     // State variables to store chat data, user token, and grouped chats
     const [chatContent, setChatContent] = useState([]);
     const [localUserToken, setLocalUserToken] = useState('');
     const [groupedChats, setGroupedChats] = useState({});
+    const [isSocketConnected, setIsSocketConnected] = useState(false);
+    const [socket, setSocket] = useState(null)
 
     const navigation = useNavigation();
 
     // Fetch local user data from AsyncStorage
     useEffect(() => {
-        const getLocalUser = async () => {
-            const localData = await AsyncStorage.getItem('userData');
-            if (localData) {
-                const userData = JSON.parse(localData);
-                setLocalUserToken(userData.token);
-            }
+
+        const localUser = async () => {
+            const userData = await AsyncStorage.getItem('userData');
+            const parsedData = JSON.parse(userData)
+            setLocalUserToken(parsedData.token);
         };
-        getLocalUser();
+    
+        localUser();
+        
     }, []);
 
-    // Fetch chats periodically from the API
+    // Websocket connection
     useEffect(() => {
-        if (!localUserToken) return;
 
-        const fetchChats = async () => {
-            try {
-                const response = await fetch(api.getChats, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ user1: localUserToken }),
-                });
+        // Check local user UUID
+        if (!localUserToken || isSocketConnected) return;
 
-                if (!response.ok) {
-                    throw new Error('API response failed');
-                }
 
-                const responseData = await response.json();
-                setChatContent(responseData);
-            } catch (error) {
-                console.error('Error fetching chats: ', error);
-            }
-        };
+        const cleanupWebSocket = socketConnection(setIsSocketConnected, setSocket);
 
-        fetchChats();
-        // Set up an interval to fetch chats every 2 seconds
-        const interval = setInterval(fetchChats, 2000);
+        return cleanupWebSocket;
 
-        // Clean up the interval on component unmount
-        return () => clearInterval(interval);
-    }, [localUserToken]);
+        }, [localUserToken]);
+
+    // Set Local chats
+    useEffect(() => {
+
+        // Get local chats
+        const getLocalChats =  async () => {
+            const chats = await AsyncStorage.getItem('chats');
+            setChatContent(chats)
+        }
+        
+        // Interval to update chats
+        setInterval(() => {
+            getLocalChats()
+        }, 1000);
+    })
+
+    // Request new chats
+    useEffect(() => {
+        if (localUserToken && socket && typeof socket.send === 'function' ) {
+            getChats(localUserToken, socket)
+        }
+    }, [localUserToken, socket])
 
     // Group chats by other user when chatContent changes
     useEffect(() => {
         const groupChats = async () => {
+            
+            // Check if exist chats
+            if ( chatContent.length === 0 ) return;
+
+            // Parse chats to JSON
+            const parsedChatContent = JSON.parse(chatContent);
+
             const grouped = {};
 
-            for (const chat of chatContent) {
-                // Determine the other user in the chat
-                const otherUser = chat.user1 === localUserToken ? chat.user2 : chat.user1;
-                const otherUserData = await getOtherUser(otherUser);
+            // 
+            for (const chat of parsedChatContent) {
+
+                const otherUser = chat.username;
 
                 // Group chats by other user's username
-                if (!grouped[otherUserData.username]) {
-                    grouped[otherUserData.username] = {
-                        otherUserToken: otherUserData.token,
+                if (!grouped[otherUser]) {
+                    grouped[otherUser] = {
+                        otherUserToken: chat.userID,
                         roomToken: chat.token,
                         chats: [],
                     };
                 }
 
-                grouped[otherUserData.username].chats.push(chat);
+                grouped[otherUser].chats.push(chat);
             }
 
             setGroupedChats(grouped);
         };
 
-        if (chatContent.length > 0) {
-            groupChats();
-        }
+        groupChats();
     }, [chatContent]);
-
-    // Fetch other user's data from the API
-    const getOtherUser = async (token) => {
-        try {
-            const response = await fetch(api.checkToken, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ token: token }),
-            });
-
-            if (!response.ok) {
-                throw new Error('API response failed');
-            }
-
-            const responseData = await response.json();
-            return responseData;
-        } catch (error) {
-            console.error('Error fetching username: ', error);
-            return { username: 'Unknown User', token: '' };
-        }
-    };
 
     // Navigate to Chat screen with selected chat details
     const handleNavigation = (otherUsername, otherUserToken, roomToken) => {
