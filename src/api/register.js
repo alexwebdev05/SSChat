@@ -1,4 +1,4 @@
-import { api } from './connection';
+import { api } from './url';
 
 import { storeUserData } from '../utils/storeData';
 
