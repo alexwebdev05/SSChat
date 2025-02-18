@@ -1,5 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { api } from './connection';
+import { api } from './url';
+
+import { storeUserData } from '../utils/storeData';
 
 // ----- Exported functions ----- //
 
@@ -13,6 +14,7 @@ export const signIn = async (email, password, onLogin) => {
 
     try {
         // Send data to api
+        console.log(api.checkUsers)
         const response = await fetch(api.checkUsers, {
             method: 'POST',
             headers: {
@@ -48,37 +50,3 @@ export const signIn = async (email, password, onLogin) => {
         return { status: 'error', message: error.message };
     }
 }
-
-// Handle login function
-export const handleLogin = async (setIsLoggedIn) => {
-    try {
-        await AsyncStorage.setItem('isLoggedIn', 'true');
-        setIsLoggedIn(true);
-    } catch (error) {
-        console.log("Error saving login state: ", error);
-    }
-};
-
-// Log out function
-export const logOut = async () => {
-    try {
-        await AsyncStorage.clear();
-        console.log('Logged out')
-    } catch(error) {
-        console.log('error logging out: ', error)
-    }
-  }
-
-// ----- File functions ----- //
-
-// Save data locally
-    const storeUserData = async (userData) => {
-        try {
-            // Saveing data
-            await AsyncStorage.setItem('userData', JSON.stringify(userData));
-            console.log('User data saved locally');
-            // catch errors
-        } catch (error) {
-            console.error('Error saving user data', error);
-        }
-    };

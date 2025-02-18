@@ -1,5 +1,5 @@
 // React libraries
-import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, Dimensions, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, Dimensions, ScrollView, AppState } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Shadow } from 'react-native-shadow-2';
@@ -8,9 +8,12 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 // Theme
 import generalColors from '../styles/generalColors';
 import { StatusBar } from 'expo-status-bar';
+import { messagesStore } from '../api/websocket/messages';
 
 // Api
-import { socketConnection, enterRoom, leaveRoom, getMessages, sendMessage, closeWebSocket } from '../api/messageSocket';
+import { getWebSocket } from '../api/websocket/websocket';
+import { enterRoom, leaveRoom } from '../api/websocket/rooms';
+import { sendMessage, getMessages } from '../api/websocket/messages';
 
 // Utils
 import { dateFormatter } from '../utils/dateFormatter';
@@ -27,14 +30,8 @@ export default function Chat({ route }) {
     // New messages
     const [promisedMessage, setPromisedMessage] = useState('');
 
-    // Websocket connection
-    const [isSocketConnected, setIsSocketConnected] = useState(false);
-
     // Scroll view reference
     const scrollViewRef = useRef(null);
-
-    // Other user token and name | Room token
-    const { otherUsername, otherUserToken, roomToken} = route.params;
 
     // To detect when user navigates to other screen
     const nav = useNavigation();
@@ -42,6 +39,10 @@ export default function Chat({ route }) {
     // To detect when user is watching the component
     const isFocused = useIsFocused();
 
+    // Other user token and name | Room token
+    const { otherUsername, otherUserToken, roomToken} = route.params;
+
+    const [socket, setSocket] = useState(null);
 
     // ----- Effects -----
 
@@ -56,28 +57,74 @@ export default function Chat({ route }) {
         };
         getLocalUser();
 
-        // Socket connection
-        const cleanupWebSocket = socketConnection(setMessages, setIsSocketConnected);
-        return cleanupWebSocket; 
     }, []);
+
+    // Get socket
+    useEffect(() => {
+        const wsUpdater = () => {
+            const ws = getWebSocket()
+            setSocket(ws)
+        }
+        
+        const interval = setInterval(wsUpdater, 500);
+
+        return () => clearInterval(interval);
+    }, [])
 
     // Enter room
     useEffect(() => {
         // Checks if the user is loaded and socket is connected
-        if (!localUser || !isSocketConnected || !isFocused) return;
+        if (!socket || !localUser || !isFocused) return;
 
         // Enter room
-        enterRoom(localUser, roomToken);
-    }, [localUser, isSocketConnected]);
+        enterRoom( localUser, roomToken);
+    }, [socket, localUser, isFocused]);
 
-    // Get messages when otherUsername, localUser, and socket are ready
+    // Request messages
     useEffect(() => {
-        if (!otherUsername || !localUser || !isSocketConnected || !isFocused) return;
+        // Checks if the user is loaded and socket is connected
+        if (!socket || !localUser) return;
 
-        const cleanupWebSocket = socketConnection(setMessages, setIsSocketConnected);
-        getMessages(localUser, otherUserToken);
-        return cleanupWebSocket; // This function will be called when the component unmounts
-    }, [otherUsername, localUser, isSocketConnected, isFocused]);
+        // Fetch messages once or on socket change
+        const fetchMessages = async () => {
+            getMessages(localUser, otherUserToken);
+        };
+
+        // Fetch messages when component mounts
+        fetchMessages();
+
+        // Cleanup if needed (optional, depending on how `getMessages` works)
+        return () => {};
+    }, [socket, localUser, otherUserToken]);
+
+    // Refresh messages
+    useEffect(() => {
+        // Suscribirse al evento de actualización de mensajes
+        const handleMessagesUpdate = () => {
+            // Actualiza el estado con los nuevos mensajes
+            setMessages(messagesStore.getMessages(otherUserToken));
+        };
+
+        // Escuchar cambios de mensajes en messagesStore
+        messagesStore.eventEmitter.on('updateMessages', handleMessagesUpdate);
+
+        // Cleanup cuando el componente se desmonte
+        return () => {
+            messagesStore.eventEmitter.off('updateMessages', handleMessagesUpdate);
+        };
+    }, []);
+
+    // Log messages
+    // useEffect(() => {
+    //     // Establece un intervalo que haga un console.log cada segundo
+    //     const interval = setInterval(() => {
+    //       console.log('Messages:', messagesStore.messages);  // Muestra los mensajes almacenados
+    //     }, 1000); // Ejecuta cada 1000 ms (1 segundo)
+    
+    //     // Limpia el intervalo cuando el componente se desmonte
+    //     return () => clearInterval(interval);
+    
+    //   }, []);
 
 
     // Move to bottom of the chat
@@ -96,8 +143,6 @@ export default function Chat({ route }) {
             // Leave chat room
             leaveRoom(localUser, roomToken);
 
-            // Leave websocket
-            closeWebSocket();
 
             setMessages([])
 
@@ -111,7 +156,7 @@ export default function Chat({ route }) {
     // ----- Functions -----
 
     // Send message
-    const send = (promisedMessage) => {
+    const send = async (promisedMessage) => {
         sendMessage(localUser, otherUserToken, roomToken, promisedMessage);
         setPromisedMessage('');
     };

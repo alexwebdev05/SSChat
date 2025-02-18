@@ -1,6 +1,5 @@
 // react libraries
 import { useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -14,28 +13,15 @@ import Chat from './src/screens/chat';
 const Stack = createStackNavigator();
 
 // Utils
-import { handleLogin } from './src/api/login';
+import { handleLogin } from './src/utils/session/handleLogin';
+import { checkLoginStatus } from './src/utils/storeData';
 
 export default function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(null);
 
     useEffect(() => {
-        checkLoginStatus();
+        checkLoginStatus(setIsLoggedIn);
     }, []);
-
-    // ----- Functions -----
-
-    // Check login status
-    const checkLoginStatus = async () => {
-        try {
-            const loggedStatus = await AsyncStorage.getItem('isLoggedIn');
-            setIsLoggedIn(loggedStatus === 'true');
-
-        // Catch errors
-        } catch (error) {
-            console.log("Error checking login status: ", error);
-        }
-    };
 
     // ----- DOM -----
     return (
