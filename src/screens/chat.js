@@ -99,18 +99,17 @@ export default function Chat({ route }) {
 
     // Refresh messages
     useEffect(() => {
-        // Suscribirse al evento de actualización de mensajes
         const handleMessagesUpdate = () => {
             // Actualiza el estado con los nuevos mensajes
             setMessages(messagesStore.getMessages(otherUserToken));
         };
     
         // Escuchar cambios de mensajes en messagesStore con addListener (FBEmitter)
-        messagesStore.eventEmitter.addListener('updateMessages', handleMessagesUpdate);
+        const listener = messagesStore.eventEmitter.addListener('updateMessages', handleMessagesUpdate);
     
         // Cleanup cuando el componente se desmonte
         return () => {
-            messagesStore.eventEmitter.removeListener('updateMessages', handleMessagesUpdate);  // Usamos removeListener en lugar de off
+            listener.remove(); // Usamos 'remove' en lugar de 'removeListener'
         };
     }, []);
 
