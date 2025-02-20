@@ -241,7 +241,7 @@ export default function Chat({ route }) {
                 onFocus={() => setPromisedMessage('')}
                 style={style.sendButton}
                 >
-                    <Image source={require('app/assets/icons/send.png')} style={{width: 30, height: 30, marginRight: 3}} />
+                    <Image source={require('../assets/icons/send.png')} style={{width: 30, height: 30, marginRight: 3}} />
                 </TouchableOpacity>
             </View>
 
