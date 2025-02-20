@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { signIn } from '../api/login';
 
 // Assets
-import logo from '../../assets/logo.webp';
+import logo from '../assets/logo.webp';
 
 // Theme
 import generalColors from '../styles/generalColors';

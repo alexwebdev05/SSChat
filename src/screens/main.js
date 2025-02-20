@@ -54,7 +54,7 @@ export default function Main() {
 
             {/* Options */}
             <TouchableOpacity onPress={showMenu} style={style.options}>
-                <Image source={require( 'app/assets/icons/options.png' )} style={{width: 20, height: 20,}}/>
+                <Image source={require( '../assets/icons/options.png' )} style={{width: 20, height: 20,}}/>
 
                 {/* Log Out */}
                 {isOptionMenuVisible && (
