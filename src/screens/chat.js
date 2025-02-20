@@ -176,7 +176,7 @@ export default function Chat({ route }) {
                 <View style={style.header}>
 
                     {/* Image */}
-                    <Image source={require('../assets/icons/send.png')} style={{width: 45, height: 45, marginRight: 10}} />
+                    <Image source={require('../assets/icons/profile.png')} style={{width: 45, height: 45, marginRight: 10}} />
 
                     {/* Username */}
                     <Text style={style.username}>{otherUsername}</Text>
