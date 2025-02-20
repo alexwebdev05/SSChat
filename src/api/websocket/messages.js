@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UUID from 'react-native-uuid';
-import { getWebSocket } from "./websocket";
 import { EventEmitter } from 'fbemitter';  // Cambia a FBEmitter
 
 export const messagesStore = {
@@ -34,6 +33,7 @@ export const messagesStore = {
 
 // Get messages
 export const getMessages = async (localUser, receiver) => {
+    const { getWebSocket } = await import('./websocket');
     const send = setInterval(() => {
         clearInterval(send);
         const ws = getWebSocket()
@@ -47,6 +47,7 @@ export const getMessages = async (localUser, receiver) => {
 
 // Send messages
 export const sendMessage = async (sender, receiver, roomToken, message) => {
+    const { getWebSocket } = await import('./websocket');
     const messageId = UUID.v4();
     // Add message to event manager
     messagesStore.addMessage(receiver, {
