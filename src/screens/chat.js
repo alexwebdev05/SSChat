@@ -104,13 +104,13 @@ export default function Chat({ route }) {
             // Actualiza el estado con los nuevos mensajes
             setMessages(messagesStore.getMessages(otherUserToken));
         };
-
-        // Escuchar cambios de mensajes en messagesStore
-        messagesStore.eventEmitter.on('updateMessages', handleMessagesUpdate);
-
+    
+        // Escuchar cambios de mensajes en messagesStore con addListener (FBEmitter)
+        messagesStore.eventEmitter.addListener('updateMessages', handleMessagesUpdate);
+    
         // Cleanup cuando el componente se desmonte
         return () => {
-            messagesStore.eventEmitter.off('updateMessages', handleMessagesUpdate);
+            messagesStore.eventEmitter.removeListener('updateMessages', handleMessagesUpdate);  // Usamos removeListener en lugar de off
         };
     }, []);
 
