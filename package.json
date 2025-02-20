@@ -1,7 +1,7 @@
 {
   "name": "sschat-app",
   "version": "1.0.0",
-  "main": "expo/AppEntry.js",
+  "main": "index.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -27,8 +27,7 @@
     "react-native-screens": "~4.4.0",
     "react-native-shadow-2": "^7.1.1",
     "react-native-uuid": "^2.0.3",
-    "sschat-app": "file:",
-    "uuid": "^11.0.5"
+    "sschat-app": "file:"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
