@@ -47,7 +47,10 @@ export default function Main() {
         <View style={style.screen}>
 
             {/* Transparent StatusBar */}
-            <StatusBar barStyle="auto" />
+            <View>
+                <StatusBar style='dark' />
+            </View>
+            
 
             {/* Header */}
             <Header />
