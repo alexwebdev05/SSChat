@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { chatsStore } from '../../api/websocket/chats';
 
 // API
 import { api } from '../../api/url';
@@ -52,17 +53,14 @@ export const Inbox = () => {
     // Set Local chats
     useEffect(() => {
 
-        // Get local chats
-        const getLocalChats =  async () => {
-            const chats = await AsyncStorage.getItem('chats');
-            setChatContent(chats)
-        }
+        const getLocalChats = async () => {
+            const chatsStr = await AsyncStorage.getItem('chats');
+            const chats = chatsStr ? JSON.parse(chatsStr) : [];
+            setChatContent(chats);
+          };
         
-        // Interval to update chats
-        setInterval(() => {
-            getLocalChats()
-        }, 1000);
-    })
+          getLocalChats();
+    }, [])
 
     // Request new chats
     useEffect(() => {
@@ -71,40 +69,40 @@ export const Inbox = () => {
         }
     }, [localUserToken, socket])
 
-    // Group chats by other user when chatContent changes
+    // Update chats
     useEffect(() => {
-        const groupChats = async () => {
-            
-            // Check if exist chats
-            if ( chatContent.length === 0 ) return;
-
-            // Parse chats to JSON
-            const parsedChatContent = JSON.parse(chatContent);
-
-            const grouped = {};
-
-            // 
-            for (const chat of parsedChatContent) {
-
-                const otherUser = chat.username;
-
-                // Group chats by other user's username
-                if (!grouped[otherUser]) {
-                    grouped[otherUser] = {
-                        otherUserToken: chat.userID,
-                        roomToken: chat.token,
-                        chats: [],
-                    };
-                }
-
-                grouped[otherUser].chats.push(chat);
-            }
-
-            setGroupedChats(grouped);
+        const handleMessageUpdate = () => {
+            setChatContent([...chatsStore.getMessages()]);
         };
 
+        const listener = chatsStore.eventEmitter.addListener('updateChats', handleMessageUpdate);
+        return () => listener.remove();
+    }, [])
+
+    // Group chats by other user when chatContent changes
+    useEffect(() => {
+        const groupChats = () => {
+          if (!chatContent || chatContent.length === 0) return;
+      
+          const grouped = {};
+      
+          for (const chat of chatContent) {
+            const otherUser = chat.username;
+            if (!grouped[otherUser]) {
+              grouped[otherUser] = {
+                otherUserToken: chat.userID,
+                roomToken: chat.token,
+                chats: [],
+              };
+            }
+            grouped[otherUser].chats.push(chat);
+          }
+      
+          setGroupedChats(grouped);
+        };
+      
         groupChats();
-    }, [chatContent]);
+      }, [chatContent]);
 
     // Navigate to Chat screen with selected chat details
     const handleNavigation = (otherUsername, otherUserToken, roomToken) => {

@@ -165,7 +165,7 @@ export default function Chat({ route }) {
         <View style={style.screen}>
 
             {/* Transparent StatusBar */}
-            <StatusBar barStyle="auto" />
+            <StatusBar style="dark" />
             
             {/* Header */}
             <Shadow

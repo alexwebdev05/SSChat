@@ -11,6 +11,7 @@
   "dependencies": {
     "@expo/metro-runtime": "~4.0.1",
     "@react-native-async-storage/async-storage": "1.23.1",
+    "@react-native-community/blur": "^4.4.1",
     "@react-navigation/native": "^7.0.12",
     "@react-navigation/stack": "^7.0.17",
     "eslint-config-expo": "~8.0.1",
@@ -31,7 +32,8 @@
     "react-native-shadow-2": "^7.1.1",
     "react-native-svg": "15.8.0",
     "react-native-uuid": "^2.0.3",
-    "sschat": "file:"
+    "sschat": "file:",
+    "expo-blur": "~14.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

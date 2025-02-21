@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { messagesStore } from './messages';
+import { chatsStore } from './chats';
 
 // Function to handle different message types
 export function handleMessageResponse(type, userID, response) {
@@ -29,6 +30,8 @@ export function handleMessageResponse(type, userID, response) {
             messagesStore.addMessage(response.sender, response)
             break;
         case 'obtained-chats':
+            chatsStore.replaceChats(response)
+            console.log(chatsStore.getMessages())
             const storeData = async (response) => {
                 try {
                     await AsyncStorage.setItem('chats', JSON.stringify(response));
@@ -40,6 +43,15 @@ export function handleMessageResponse(type, userID, response) {
             storeData(response);
             
             break;
+        case 'created-chat':
+            console.log("🔹 Created chat:", response);
+
+            // Añadir el chat a chatsStore
+            chatsStore.addMessage(response);
+
+            chatsStore.eventEmitter.emit('updateChats');
+
+            break
         case 'checked-token':
             const { token, username} = response;
             const updateOtherUsername = async (token, username) => {

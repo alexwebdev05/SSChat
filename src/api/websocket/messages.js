@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import UUID from 'react-native-uuid';
 import { EventEmitter } from 'fbemitter';  // Cambia a FBEmitter
 
@@ -7,7 +6,7 @@ export const messagesStore = {
     // Message collection
     messages: {},
 
-    // Events manager usando FBEmitter
+    // Events manager
     eventEmitter: new EventEmitter(),  // Usamos FBEmitter aquí
 
     // Replace by new messages
