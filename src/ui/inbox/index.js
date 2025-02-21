@@ -121,7 +121,7 @@ export const Inbox = () => {
                     style={style.chatContainer}
                 >
                     <Image
-                        source={require('app/assets/icons/profile.png')}
+                        source={require('../../assets/icons/profile.png')}
                         style={{ width: 55, height: 55, marginRight: 10 }}
                     />
                     <View>

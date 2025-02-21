@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from '../../api/connection';
 
 // Assets
-import plus from '../../../assets/icons/plus.png'
+import plus from '../../assets/icons/plus.png'
 
 export const ChatMaker = () => {
 

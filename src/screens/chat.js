@@ -99,18 +99,17 @@ export default function Chat({ route }) {
 
     // Refresh messages
     useEffect(() => {
-        // Suscribirse al evento de actualización de mensajes
         const handleMessagesUpdate = () => {
             // Actualiza el estado con los nuevos mensajes
             setMessages(messagesStore.getMessages(otherUserToken));
         };
-
-        // Escuchar cambios de mensajes en messagesStore
-        messagesStore.eventEmitter.on('updateMessages', handleMessagesUpdate);
-
+    
+        // Escuchar cambios de mensajes en messagesStore con addListener (FBEmitter)
+        const listener = messagesStore.eventEmitter.addListener('updateMessages', handleMessagesUpdate);
+    
         // Cleanup cuando el componente se desmonte
         return () => {
-            messagesStore.eventEmitter.off('updateMessages', handleMessagesUpdate);
+            listener.remove(); // Usamos 'remove' en lugar de 'removeListener'
         };
     }, []);
 
@@ -177,7 +176,7 @@ export default function Chat({ route }) {
                 <View style={style.header}>
 
                     {/* Image */}
-                    <Image source={require('app/assets/icons/profile.png')} style={{width: 45, height: 45, marginRight: 10}} />
+                    <Image source={require('../assets/icons/profile.png')} style={{width: 45, height: 45, marginRight: 10}} />
 
                     {/* Username */}
                     <Text style={style.username}>{otherUsername}</Text>
@@ -242,7 +241,7 @@ export default function Chat({ route }) {
                 onFocus={() => setPromisedMessage('')}
                 style={style.sendButton}
                 >
-                    <Image source={require('app/assets/icons/send.png')} style={{width: 30, height: 30, marginRight: 3}} />
+                    <Image source={require('../assets/icons/send.png')} style={{width: 30, height: 30, marginRight: 3}} />
                 </TouchableOpacity>
             </View>
 
