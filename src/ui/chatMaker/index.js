@@ -11,6 +11,9 @@ import { chatsStore, newChat } from '../../api/websocket/chats';
 // Assets
 import plus from '../../../assets/phoneIcons/addChat.png'
 
+// Colors
+import generalColors from '../../styles/generalColors';
+
 export const ChatMaker = () => {
 
     const [username, setUsername] = useState('');
@@ -113,7 +116,7 @@ const style = StyleSheet.create({
         right: 40,
         padding: 15,
         borderRadius: 25,
-        backgroundColor: '#5eb1ff'
+        backgroundColor: generalColors.main
     },
     plusIcon: {
         width: 40,
@@ -151,7 +154,7 @@ const style = StyleSheet.create({
         borderBottomRightRadius: 15,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#5eb1ff'
+        backgroundColor: generalColors.main
     },
     newChatButtonText: {
         fontWeight: 'bold',

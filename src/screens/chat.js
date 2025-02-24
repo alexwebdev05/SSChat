@@ -97,6 +97,17 @@ export default function Chat({ route }) {
         return () => {};
     }, [socket, localUser, otherUserToken]);
 
+    // Set local messages before receive new messages
+    useEffect(() => {
+
+        const localMessages = async () => {
+            const messages = await AsyncStorage.getItem(otherUserToken)
+            setMessages(JSON.parse(messages))
+        }
+        localMessages()
+        
+    }, [])
+
     // Refresh messages
     useEffect(() => {
         const handleMessagesUpdate = () => {
