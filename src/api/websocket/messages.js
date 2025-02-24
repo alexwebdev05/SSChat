@@ -33,6 +33,7 @@ export const messagesStore = {
 // Get messages
 export const getMessages = async (localUser, receiver) => {
     const { getWebSocket } = await import('./websocket');
+    console.log('gettin new messages')
     const send = setInterval(() => {
         clearInterval(send);
         const ws = getWebSocket()

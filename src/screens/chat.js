@@ -129,7 +129,9 @@ export default function Chat({ route }) {
     // Move to bottom of the chat
     useEffect(() => {
         if (scrollViewRef.current) {
-            scrollViewRef.current.scrollToEnd({ animated: true });
+            setTimeout(() => {
+                scrollViewRef.current.scrollToEnd({ animated: true });
+            }, 100); // Pequeño delay para asegurar que el scroll funcione bien
         }
     }, [messages]);
 
@@ -176,7 +178,7 @@ export default function Chat({ route }) {
                 <View style={style.header}>
 
                     {/* Image */}
-                    <Image source={require('../assets/icons/profile.png')} style={{width: 45, height: 45, marginRight: 10}} />
+                    <Image source={require('../assets/icons/profile.png')} style={{width: 50, height: 50, marginRight: 10}} />
 
                     {/* Username */}
                     <Text style={style.username}>{otherUsername}</Text>
@@ -191,59 +193,81 @@ export default function Chat({ route }) {
                 ref={scrollViewRef}
                 onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
             >
+                {messages.map((message, index) => {
+                    const currentDate = new Date(message.created_at).toDateString();
+                    const previousDate = index > 0 ? new Date(messages[index - 1].created_at).toDateString() : null;
 
-                {messages.map((message) => {  
-                    if (message.sender == otherUserToken) {
-                        return (
-                            <View
-                            style={style.message}
-                            key={message.id}
-                            >
-                                <Text style={style.messageText}>{message.message}</Text>
-                                <Text style={style.messageDate}>{dateFormatter(message.created_at)}</Text>
-                            </View>
-                        )
-                    }                  
                     return (
-                        <View
-                        key={message.id}
-                        style={style.userHost}>
-                            <View style={style.messageHost}>
-                                <Text style={style.messageText}>{message.message}</Text>
-                                <Text style={style.messageDate}>{dateFormatter(message.created_at)}</Text>
-                            </View>
+                        <View key={message.id}>
+                            {/* Mostrar la fecha si es diferente a la del mensaje anterior */}
+                            {currentDate !== previousDate && (
+                                <Text style={style.dateSeparator}>{currentDate}</Text>
+                            )}
+
+                            {message.sender === otherUserToken ? (
+                                <View style={style.message}>
+                                    <Text style={style.messageText}>{message.message}</Text>
+                                    <Text style={style.messageDate}>{dateFormatter(message.created_at)}</Text>
+                                </View>
+                            ) : (
+                                <View style={style.userHost}>
+                                    <View style={style.messageHost}>
+                                        <Text style={style.messageText}>{message.message}</Text>
+                                        <Text style={style.messageDate}>{dateFormatter(message.created_at)}</Text>
+                                    </View>
+                                </View>
+                            )}
                         </View>
-                    )
+                    );
                 })}
-                
             </ScrollView>
 
             {/* Message sender */}
-            <View style={style.messageCreator}>
+            
+                <View style={style.messageCreator}>
 
-                {/* Message setter */}
-                <TextInput 
-                placeholder='Message'
+                    {/* Message setter */}
+                    <TextInput 
+                    placeholder='Message'
 
-                // Set message on real time
-                onChangeText={setPromisedMessage}
-                value={promisedMessage}
-                style={style.messageInput}
-                />
+                    // Set message on real time
+                    onChangeText={setPromisedMessage}
+                    value={promisedMessage}
+                    style={style.messageInput}
+                    />
 
-                {/* Send button */}
-                <TouchableOpacity
+                    {promisedMessage !== '' ? (
+                        
+                        // --- Send button ---
+                        <TouchableOpacity
 
-                // Call send function
-                onPress={() => send(promisedMessage)}
+                        // Call send function
+                        onPress={() => send(promisedMessage)}
 
-                // Reset message
-                onFocus={() => setPromisedMessage('')}
-                style={style.sendButton}
-                >
-                    <Image source={require('../assets/icons/send.png')} style={{width: 30, height: 30, marginRight: 3}} />
-                </TouchableOpacity>
-            </View>
+                        // Reset message
+                        onFocus={() => setPromisedMessage('')}
+                        style={style.sendButton}
+                        >
+                            <Image source={require('../assets/icons/send.png')} style={style.send} />
+                        </TouchableOpacity>
+                    ) : (
+
+                        // --- Audio button ---
+                        <TouchableOpacity
+
+                        // Call send function
+                        onPress={() => send(promisedMessage)}
+
+                        // Reset message
+                        onFocus={() => setPromisedMessage('')}
+                        style={style.sendButton}
+                        >
+                            <Image source={require('../assets/icons/mic.png')} style={style.mic} />
+                        </TouchableOpacity>
+                    )}
+                </View>
+            
+            
 
         </View>
     )
@@ -289,11 +313,11 @@ const style = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'flex-end',
         alignSelf: 'flex-start',
-        paddingVertical: 4,
-        paddingHorizontal: 10,
+        paddingVertical: 6,
+        paddingHorizontal: 13,
         marginHorizontal: 20,
         marginTop: 10,
-        borderRadius: 10,
+        borderRadius: 13,
         backgroundColor: generalColors.guestMessage
     },
 
@@ -301,11 +325,11 @@ const style = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'flex-end',
         alignSelf: 'flex-start',
-        paddingVertical: 4,
-        paddingHorizontal: 10,
+        paddingVertical: 6,
+        paddingHorizontal: 13,
         marginHorizontal: 20,
         marginTop: 10,
-        borderRadius: 10,
+        borderRadius: 13,
         backgroundColor: generalColors.main
     },
 
@@ -324,19 +348,21 @@ const style = StyleSheet.create({
 
     // Bottom Options
     messageCreator: {
-        width: width - 20,
+        width: width - 35,
         height: 45,
         flexDirection: 'row',
         marginVertical: 10,
-        marginLeft: 10,
+        marginLeft: 19,
         justifyContent: 'center',
+        borderRadius: 100,
+        backgroundColor: generalColors.messageMaker,
         
     },
     messageInput: {
         flex: 1,
-        borderRadius: 100,
-        backgroundColor: generalColors.messageMaker,
-        fontWeight: 800
+        marginLeft: 15,
+        fontWeight: 800,
+        fontSize: 16
     },
     sendButton: {
         borderRadius: 100,
@@ -348,5 +374,28 @@ const style = StyleSheet.create({
         backgroundColor: generalColors.main,
         justifyContent: 'center',
         alignItems: 'center'
+    },
+
+    dateSeparator: {
+        textAlign: 'center',
+        marginVertical: 10,
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: generalColors.date,
+    },
+
+    // Icons
+    send: {
+        width: 25,
+        height: 25,
+        marginRight: 2,
+        marginTop: 1
+    },
+
+    mic: {
+        width: 20,
+        height: 20,
+        marginRight: 1
     }
+    
 })

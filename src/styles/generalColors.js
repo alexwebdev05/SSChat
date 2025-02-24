@@ -21,6 +21,8 @@ export default generalColors = {
         chats: '#d4d4d4',
 
         messageMaker: '#d4d4d4',
-        guestMessage: '#7f7f7f'
+        guestMessage: '#7f7f7f',
+
+        date: '#adadad'
 
 }

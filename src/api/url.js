@@ -12,5 +12,5 @@ export const api = {
     newChat: `http://${API}/api/chats/newchat`,
 
     // WebSocket
-    websocket: `ws://192.168.80.91:8080`
+    websocket: `ws://192.168.1.34:8080`
 }

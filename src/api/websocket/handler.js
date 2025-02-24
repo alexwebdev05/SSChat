@@ -18,7 +18,7 @@ export function handleMessageResponse(type, userID, response) {
                 try {
                     await AsyncStorage.removeItem(userID);
                     await AsyncStorage.setItem(userID, JSON.stringify(response));
-                    console.log('Messages saved locally');
+                    console.log('New messages updated');
                 } catch(error) {
                     console.error('Error saving messages', error);
                 }
@@ -31,7 +31,6 @@ export function handleMessageResponse(type, userID, response) {
             break;
         case 'obtained-chats':
             chatsStore.replaceChats(response)
-            console.log(chatsStore.getMessages())
             const storeData = async (response) => {
                 try {
                     await AsyncStorage.setItem('chats', JSON.stringify(response));
