@@ -16,6 +16,7 @@
     "@react-navigation/stack": "^7.0.17",
     "eslint-config-expo": "~8.0.1",
     "expo": "^52.0.36",
+    "expo-blur": "~14.0.3",
     "expo-dev-client": "~5.0.12",
     "expo-doctor": "^1.12.7",
     "expo-navigation-bar": "~4.0.8",
@@ -32,8 +33,7 @@
     "react-native-shadow-2": "^7.1.1",
     "react-native-svg": "15.8.0",
     "react-native-uuid": "^2.0.3",
-    "sschat": "file:",
-    "expo-blur": "~14.0.3"
+    "sschat": "file:"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

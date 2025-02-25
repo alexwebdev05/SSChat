@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { chatsStore } from '../../api/websocket/chats';
+import { EventEmitter } from 'fbemitter';
 
 // API
 import { api } from '../../api/url';
@@ -12,7 +13,10 @@ import { getChats } from '../../api/websocket/chats';
 
 // Theme
 import generalColors from '../../styles/generalColors';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+// Utils
+import { dateFormatter } from '../../utils/dateFormatter';
+import { messagesStore } from '../../api/websocket/messages';
 
 export const Inbox = () => {
     // State variables to store chat data, user token, and grouped chats
@@ -88,9 +92,13 @@ export const Inbox = () => {
       
           for (const chat of chatContent) {
             const otherUser = chat.username;
+            let lastMessageDate = dateFormatter(chat.lastMessage.created_at)
+
             if (!grouped[otherUser]) {
               grouped[otherUser] = {
                 otherUserToken: chat.userID,
+                lastMessage: chat.lastMessage,
+                lastMessageDate: lastMessageDate,
                 roomToken: chat.token,
                 chats: [],
               };
@@ -102,7 +110,33 @@ export const Inbox = () => {
         };
       
         groupChats();
-      }, [chatContent]);
+    }, [chatContent]);
+
+    // Update chat las message
+    useEffect(() => {
+        const handleNewMessage = ({ receiver, newMessage }) => {
+            setChatContent(prevChats => {
+                const updatedChats = prevChats.map(chat => {
+                    if (chat.userID === receiver) {
+                        return {
+                            ...chat,
+                            lastMessage: newMessage,
+                        };
+                    }
+                    return chat;
+                });
+                return [...updatedChats];
+            });
+        };
+    
+        // Suscribirse al evento
+        const subscription = messagesStore.eventEmitter.addListener('newMessage', handleNewMessage);
+    
+        // Cleanup
+        return () => {
+            subscription.remove();
+        };
+    }, []);
 
     // Navigate to Chat screen with selected chat details
     const handleNavigation = (otherUsername, otherUserToken, roomToken) => {
@@ -115,16 +149,28 @@ export const Inbox = () => {
             {Object.entries(groupedChats).map(([otherUsername, data]) => (
                 <TouchableOpacity
                     onPress={() => handleNavigation(otherUsername, data.otherUserToken, data.roomToken)}
-                    key={otherUsername}
-                    style={style.chatContainer}
+                    key={data.otherUserToken}
+                    style={[
+                        style.chatContainer,
+                    ]}
                 >
+                    {/* Image */}
                     <Image
                         source={require('../../assets/icons/profile.png')}
-                        style={{ width: 55, height: 55, marginRight: 10 }}
+                        style={{ width: 60, height: 60, marginRight: 10 }}
                     />
-                    <View>
-                        <Text style={style.chatGroupHeader}>{otherUsername}</Text>
+
+                    {/* Last message */}
+                    <View style={style.lastMessageContainer}>
+                        <View>
+                            <Text style={style.chatGroupHeader}>{otherUsername}</Text>
+                            <Text>{data.lastMessage.message}</Text>
+                        </View>
+                        
+
+                        <Text style={style.lastMessageDate}>{data.lastMessageDate}</Text>
                     </View>
+                    
                 </TouchableOpacity>
             ))}
         </View>
@@ -137,10 +183,9 @@ const style = StyleSheet.create({
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 10,
     },
     chatGroupHeader: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 5,
         color: generalColors.primary,
@@ -149,9 +194,21 @@ const style = StyleSheet.create({
         width: '100%',
         padding: 10,
         backgroundColor: generalColors.chats,
-        borderRadius: 15,
-        marginBottom: 10,
+
         flexDirection: 'row',
         alignItems: 'center',
     },
+
+    // Last messages
+    lastMessageContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start'
+    },
+
+    lastMessageDate: {
+        fontSize: 12,
+        marginTop: 7
+    }
 });

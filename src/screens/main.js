@@ -95,8 +95,7 @@ const style = StyleSheet.create({
         alignItems: 'center'
     },
     chats: {
-        width: '100%',
-        paddingHorizontal: 15,
+        width: '100%'
     },
     options: {
         position: 'absolute',

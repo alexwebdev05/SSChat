@@ -1,7 +1,7 @@
 export default generalColors = {
 
     // ----- Main -----
-    main: '#1e7aff',
+    main: '#1e8bff',
     white: '#f6f6f6',
     black: '',
 
@@ -18,7 +18,7 @@ export default generalColors = {
         finish: '#00000000',
 
     // ----- Chats -----
-        chats: '#d4d4d4',
+        chats: '#c8e3ff',
 
         messageMaker: '#d4d4d4',
         guestMessage: '#7f7f7f',

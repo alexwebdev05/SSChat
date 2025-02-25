@@ -202,7 +202,7 @@ export default function Chat({ route }) {
             <ScrollView
                 style={style.messageContainer}
                 ref={scrollViewRef}
-                onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
+                onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: false })}
             >
                 {messages.map((message, index) => {
                     const currentDate = new Date(message.created_at).toDateString();
