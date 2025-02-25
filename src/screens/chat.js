@@ -204,33 +204,37 @@ export default function Chat({ route }) {
                 ref={scrollViewRef}
                 onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: false })}
             >
-                {messages.map((message, index) => {
-                    const currentDate = new Date(message.created_at).toDateString();
-                    const previousDate = index > 0 ? new Date(messages[index - 1].created_at).toDateString() : null;
+                {(messages === null || messages.length === 0) ? (
+                    // Mensaje en caso de que no haya mensajes aún
+                    <Text></Text>
+                ) : (
+                    messages.map((message, index) => {
+                        const currentDate = new Date(message.created_at).toDateString();
+                        const previousDate = index > 0 ? new Date(messages[index - 1].created_at).toDateString() : null;
 
-                    return (
-                        <View key={message.id}>
-                            {/* Mostrar la fecha si es diferente a la del mensaje anterior */}
-                            {currentDate !== previousDate && (
-                                <Text style={style.dateSeparator}>{currentDate}</Text>
-                            )}
+                        return (
+                            <View key={message.id}>
+                                {/* Mostrar la fecha si es diferente a la del mensaje anterior */}
+                                {currentDate !== previousDate && (
+                                    <Text style={style.dateSeparator}>{currentDate}</Text>
+                                )}
 
-                            {message.sender === otherUserToken ? (
-                                <View style={style.message}>
-                                    <Text style={style.messageText}>{message.message}</Text>
-                                    <Text style={style.messageDate}>{dateFormatter(message.created_at)}</Text>
-                                </View>
-                            ) : (
-                                <View style={style.userHost}>
-                                    <View style={style.messageHost}>
+                                {message.sender === otherUserToken ? (
+                                    <View style={style.message}>
                                         <Text style={style.messageText}>{message.message}</Text>
                                         <Text style={style.messageDate}>{dateFormatter(message.created_at)}</Text>
                                     </View>
-                                </View>
-                            )}
-                        </View>
-                    );
-                })}
+                                ) : (
+                                    <View style={style.userHost}>
+                                        <View style={style.messageHost}>
+                                            <Text style={style.messageText}>{message.message}</Text>
+                                            <Text style={style.messageDate}>{dateFormatter(message.created_at)}</Text>
+                                        </View>
+                                    </View>
+                                )}
+                            </View>
+                        );
+                    }))}
             </ScrollView>
 
             {/* Message sender */}
