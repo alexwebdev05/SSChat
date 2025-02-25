@@ -187,7 +187,7 @@ export const Inbox = () => {
                         <View style={style.lastMessageContainer}>
                             <View>
                                 <Text style={style.chatGroupHeader}>{otherUsername}</Text>
-                                <Text>{data.lastMessage.message}</Text>
+                                <Text style={style.message}>{data.lastMessage.message}</Text>
                             </View>
                             
 
@@ -207,18 +207,17 @@ const style = StyleSheet.create({
     container: {
         width: '100%',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
     chatGroupHeader: {
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 5,
-        color: generalColors.primary,
+        color: 'white'
     },
     chatContainer: {
         width: '100%',
         padding: 10,
-        backgroundColor: generalColors.chats,
 
         flexDirection: 'row',
         alignItems: 'center',
@@ -234,9 +233,13 @@ const style = StyleSheet.create({
 
     lastMessageDate: {
         fontSize: 12,
-        marginTop: 7
+        marginTop: 7,
+        color: 'white'
     },
     refreshContainer: {
         width: '100%',
+    },
+    message: {
+        color: 'white'
     }
 });

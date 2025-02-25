@@ -21,7 +21,7 @@ export default function Main() {
 
     // Navigation var transparent
     useEffect(() => {
-        NavigationBar.setBackgroundColorAsync(generalColors.main);
+        NavigationBar.setBackgroundColorAsync(generalColors.back);
     }, []);
 
     // ----- Functions -----
@@ -48,7 +48,7 @@ export default function Main() {
 
             {/* Transparent StatusBar */}
             <View>
-                <StatusBar style='dark' />
+                <StatusBar style='light' />
             </View>
             
 
@@ -57,7 +57,7 @@ export default function Main() {
 
             {/* Options */}
             <TouchableOpacity onPress={showMenu} style={style.options}>
-                <Image source={require( '../assets/icons/options.png' )} style={{width: 20, height: 20,}}/>
+                <Image source={require( '../../assets/phoneIcons/options.png' )} style={{width: 20, height: 20,}}/>
 
                 {/* Log Out */}
                 {isOptionMenuVisible && (
@@ -92,7 +92,8 @@ const style = StyleSheet.create({
     screen: {
         width: '100%',
         height: '100%',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: generalColors.back
     },
     chats: {
         width: '100%'

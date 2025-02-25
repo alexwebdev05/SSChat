@@ -244,6 +244,7 @@ export default function Chat({ route }) {
                     {/* Message setter */}
                     <TextInput 
                     placeholder='Message'
+                    placeholderTextColor="#afb5b8"
 
                     // Set message on real time
                     onChangeText={setPromisedMessage}
@@ -295,7 +296,8 @@ const { width } = Dimensions.get('window');
 const style = StyleSheet.create({
     screen: {
         width: '100%',
-        height: '100%'
+        height: '100%',
+        backgroundColor: generalColors.back
     },
 
     // Header
@@ -311,6 +313,7 @@ const style = StyleSheet.create({
     username: {
         fontSize: 20,
         fontWeight: 600,
+        color: 'white'
     },
 
     // Messages
@@ -356,9 +359,9 @@ const style = StyleSheet.create({
 
     messageDate: {
         fontSize: 10,
-        color: 'white',
         fontWeight: 500,
-        marginLeft: 10
+        marginLeft: 10,
+        color: 'white'
     },
 
     // Bottom Options
@@ -370,14 +373,15 @@ const style = StyleSheet.create({
         marginLeft: 19,
         justifyContent: 'center',
         borderRadius: 100,
-        backgroundColor: generalColors.messageMaker,
+        backgroundColor: generalColors.messageMaker
         
     },
     messageInput: {
         flex: 1,
         marginLeft: 15,
         fontWeight: 800,
-        fontSize: 16
+        fontSize: 16,
+        color: 'white'
     },
     sendButton: {
         borderRadius: 100,
