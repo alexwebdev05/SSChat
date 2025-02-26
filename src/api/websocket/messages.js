@@ -64,10 +64,9 @@ export const sendMessage = async (sender, receiver, roomToken, message) => {
 
     // Save message
     try {
-        const existingMessages = await AsyncStorage.getItem('messages');
+        const existingMessages = await AsyncStorage.getItem(receiver);
         const parsedMessages = existingMessages ? JSON.parse(existingMessages) : {};
-
-        parsedMessages[receiver].push(newMessage)
+        parsedMessages.push(newMessage)
 
         await AsyncStorage.setItem('messages', JSON.stringify(parsedMessages));
     } catch (error) {
