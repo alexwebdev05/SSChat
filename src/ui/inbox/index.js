@@ -4,15 +4,10 @@ import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView, RefreshCon
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { chatsStore } from '../../api/websocket/chats';
-import { EventEmitter } from 'fbemitter';
 
 // API
-import { api } from '../../api/url';
 import { socketConnection } from '../../api/websocket/websocket';
 import { getChats } from '../../api/websocket/chats';
-
-// Theme
-import generalColors from '../../styles/generalColors';
 
 // Utils
 import { dateFormatter } from '../../utils/dateFormatter';

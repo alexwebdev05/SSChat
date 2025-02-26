@@ -128,6 +128,7 @@ const style = StyleSheet.create({
         height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
+        backgroundColor: generalColors.back
     },
 
     logo: {
@@ -140,6 +141,7 @@ const style = StyleSheet.create({
         fontSize: 30,
         fontWeight: '800',
         marginBottom: 50,
+        color: 'white'
     },
 
     blocksContainer: {
@@ -153,9 +155,11 @@ const style = StyleSheet.create({
     blockTitle: {
         fontSize: 18,
         marginBottom: 5,
+        color: 'white'
     },
 
     input: {
+        height: 35,
         borderRadius: 10,
         fontSize: 16,
         backgroundColor: generalColors.input,
@@ -165,6 +169,7 @@ const style = StyleSheet.create({
     loginRegister: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems: 'flex-end',
         maxWidth: '100%',
         marginTop: 10,
     },
@@ -174,7 +179,7 @@ const style = StyleSheet.create({
         height: 40,
         justifyContent: 'center',
         borderRadius: 10,
-        backgroundColor: '#c0c0c0',
+        backgroundColor: generalColors.main,
     },
 
     signIn: {
@@ -190,7 +195,7 @@ const style = StyleSheet.create({
     register: {
         fontSize: 16,
         borderRadius: 5,
-        color: 'blue',
+        color: generalColors.main,
         textDecorationLine: 'underline',
     },
 

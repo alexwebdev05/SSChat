@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { StatusBar  } from 'expo-status-bar';
 
 // Functions
 import { signIn } from '../api/login';
@@ -38,6 +39,11 @@ export default function Login({ onLogin }) {
 
     return (
         <View style={style.screen}>
+
+            {/* Transparent StatusBar */}
+            <View>
+                <StatusBar style='light' />
+            </View>
 
             {/* Logo */}
             <Image source={logo} style={style.logo} />
@@ -97,7 +103,8 @@ const style = StyleSheet.create({
         width: '100%',
         height: '100%',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        backgroundColor: generalColors.back
     },
 
     logo: {
@@ -109,7 +116,8 @@ const style = StyleSheet.create({
     title: {
         fontSize: 30,
         fontWeight: 800,
-        marginBottom: 50
+        marginBottom: 50,
+        color: 'white'
     },
 
     blocksContainer: {
@@ -122,10 +130,12 @@ const style = StyleSheet.create({
 
     blockTitle: {
         fontSize: 18,
-        marginBottom: 5
+        marginBottom: 5,
+        color: 'white'
     },
 
     input: {
+        height: 35,
         borderRadius: 10,
         fontSize: 16,
         backgroundColor: generalColors.input,
@@ -135,6 +145,7 @@ const style = StyleSheet.create({
     loginRegister: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems: 'flex-end',
         maxWidth: '100%',
         marginTop: 10,
     },
@@ -144,12 +155,14 @@ const style = StyleSheet.create({
         height: 40,
         justifyContent: 'center',
         borderRadius: 10,
-        backgroundColor: '#c0c0c0'
+        backgroundColor: generalColors.main
     },
 
     signIn: {
         textAlign: 'center',
-        fontSize: 16
+        fontWeight: 800,
+        fontSize: 16,
+        color: 'white'
     },
 
     registerContainer: {
@@ -160,7 +173,7 @@ const style = StyleSheet.create({
     register: {
         fontSize: 16,
         borderRadius: 5,
-        color: 'blue',
+        color: generalColors.main,
         textDecorationLine: 'underline'
     },
 

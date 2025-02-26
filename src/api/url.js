@@ -1,15 +1,12 @@
 import { API } from '@env'
 
 export const api = {
-    url: `http://${API}/api`,
+    url: `http://192.168.1.34/api`,
     
     // Users
-    registerUser: `http://${API}/api/users/registeruser`,
-    checkUsers: `http://${API}/api/users/checkuser`,
-    checkToken: `http://${API}/api/users/checktoken`,
-
-    // Chats
-    newChat: `http://${API}/api/chats/newchat`,
+    registerUser: `http://192.168.1.34:8080/api/users/registeruser`,
+    checkUsers: `http://192.168.1.34:8080/api/users/checkuser`,
+    checkToken: `http://192.168.1.34:8080/api/users/checktoken`,
 
     // WebSocket
     websocket: `ws://192.168.1.34:8080`

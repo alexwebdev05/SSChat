@@ -13,9 +13,9 @@ import { Inbox } from '../ui/inbox';
 import { ChatMaker } from '../ui/chatMaker/index'
 
 // Utils
-import { logOut } from '../api/login';
+import { logOut } from '../utils/session/logout';
 
-export default function Main() {
+export default function Main({navigation}) {
 
     const [isOptionMenuVisible, setIsOptionMenuVisible] = useState(false)
 
@@ -35,6 +35,11 @@ export default function Main() {
         } else {
             setIsOptionMenuVisible(true)
         }
+    }
+
+    // Log out
+    const handleLogOut = () => {
+        logOut()
     }
 
     // Make menu invisible
@@ -62,7 +67,7 @@ export default function Main() {
                 {/* Log Out */}
                 {isOptionMenuVisible && (
                     <View style={style.optionButtons}>
-                        <TouchableOpacity onPress={logOut} style={style.logOutButton}>
+                        <TouchableOpacity onPress={handleLogOut} style={style.logOutButton}>
                             <Text style={{color: generalColors.white, fontWeight: 800}}>Log out</Text>
                         </TouchableOpacity>
                     </View>
