@@ -34,7 +34,7 @@ export const socketConnection = (setIsSocketConnected, setSocket) => {
             ws.onclose = null;
             ws.close();
             ws = null;
-            setSocket(null);
+            setSocket?.(null);
         }
     
         setTimeout(() => {
@@ -52,17 +52,19 @@ export const socketConnection = (setIsSocketConnected, setSocket) => {
         }
     };
 
-    // Cleanup cuando el componente se desmonte
-    return () => {
-        if (ws) {
-            console.log("🔌 Cleaning up WebSocket connection...");
-            ws.onclose = null;
-            ws.close();
-            ws = null;
-            setSocket(null);
-        }
-    };
+    // Return websocket
+    return ws
 };
 
-// Función para acceder al WebSocket global
+// Get websocket globally
 export const getWebSocket = () => ws;
+
+// Close websocket
+export const closeWebSocket = () => {
+    if (ws) {
+        console.log("🔌 Cerrando WebSocket manualmente...");
+        ws.onclose = null;
+        ws.close();
+        ws = null;
+    }
+};

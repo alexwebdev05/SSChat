@@ -35,7 +35,9 @@ const style = StyleSheet.create({
         width: width,
         height: 105,
         alignItems: 'center',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
+        backgroundColor: generalColors.header,
+        borderRadius: 20
     },
     shadow: {
         height: '100%',

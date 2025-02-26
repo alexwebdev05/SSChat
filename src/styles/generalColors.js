@@ -6,7 +6,7 @@ export default generalColors = {
     black: '#000',
 
     // ----- Background -----
-    back: '#000d15',
+    back: '#041017',
 
     // ----- Login -----
     input: '#e5e5e5',
@@ -22,6 +22,7 @@ export default generalColors = {
 
     // ----- Chats -----
         messageMaker: '#1b4e6b',
+        header: '#0C86CC',
         guestMessage: '#7f7f7f',
 
         date: '#adadad'

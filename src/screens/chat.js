@@ -178,7 +178,7 @@ export default function Chat({ route }) {
         <View style={style.screen}>
 
             {/* Transparent StatusBar */}
-            <StatusBar style="dark" />
+            <StatusBar style="light" />
             
             {/* Header */}
             <Shadow
@@ -189,7 +189,7 @@ export default function Chat({ route }) {
                 <View style={style.header}>
 
                     {/* Image */}
-                    <Image source={require('../assets/icons/profile.png')} style={{width: 50, height: 50, marginRight: 10}} />
+                    <Image source={require('../assets/icons/profile.png')} style={style.profile} />
 
                     {/* Username */}
                     <Text style={style.username}>{otherUsername}</Text>
@@ -304,10 +304,22 @@ const style = StyleSheet.create({
     header: {
         width: width,
         paddingTop: 35,
-        marginLeft: 25,
+        paddingLeft: 25,
         height: 105,
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: generalColors.header,
+        borderRadius: 20
+    },
+
+    profile: {
+        width: 50,
+        height: 50,
+        marginRight: 10,
+        borderRadius: 100,
+        borderWidth: 2,
+        borderColor: '#1B4E6B'
+
     },
 
     username: {

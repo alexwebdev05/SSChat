@@ -51,7 +51,7 @@ export const Inbox = () => {
 
         const cleanupWebSocket = socketConnection(setIsSocketConnected, setSocket);
 
-        return cleanupWebSocket;
+        cleanupWebSocket;
 
         }, [localUserToken]);
 
@@ -164,8 +164,8 @@ export const Inbox = () => {
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={onRefresh}
-                        colors={['#3498db']}
-                        progressBackgroundColor="#fff"
+                        colors={['#fff']}
+
                     />
                 }
             >
