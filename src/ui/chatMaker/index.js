@@ -116,7 +116,7 @@ const style = StyleSheet.create({
         right: 40,
         padding: 15,
         borderRadius: 25,
-        backgroundColor: generalColors.main
+        backgroundColor: generalColors.palette1
     },
     plusIcon: {
         width: 40,
@@ -154,7 +154,7 @@ const style = StyleSheet.create({
         borderBottomRightRadius: 15,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: generalColors.main
+        backgroundColor: generalColors.palette1
     },
     newChatButtonText: {
         fontWeight: 'bold',

@@ -116,7 +116,7 @@ const style = StyleSheet.create({
         width: 80,
         padding: 5,
         alignItems: 'flex-end',
-        backgroundColor: generalColors.main,
+        backgroundColor: generalColors.palette1,
         borderRadius: 10,
         zIndex: 10
     },

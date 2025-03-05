@@ -179,7 +179,7 @@ const style = StyleSheet.create({
         height: 40,
         justifyContent: 'center',
         borderRadius: 10,
-        backgroundColor: generalColors.main,
+        backgroundColor: generalColors.palette1,
     },
 
     signIn: {
@@ -195,7 +195,7 @@ const style = StyleSheet.create({
     register: {
         fontSize: 16,
         borderRadius: 5,
-        color: generalColors.main,
+        color: generalColors.palette1,
         textDecorationLine: 'underline',
     },
 

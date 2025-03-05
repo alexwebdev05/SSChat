@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Shadow } from 'react-native-shadow-2';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
+import LinearGradient from 'react-native-linear-gradient';
 
 // Theme
 import generalColors from '../styles/generalColors';
@@ -181,12 +182,13 @@ export default function Chat({ route }) {
             <StatusBar style="light" />
             
             {/* Header */}
-            <Shadow
-                startColor={generalColors.start}
-                endColor={generalColors.finish}
-                distance={30}
-            >
-                <View style={style.header}>
+
+                <LinearGradient
+                colors={[generalColors.palette1, generalColors.palette2]}
+                start={{ x: 0, y: 1 }}
+                end={{ x: 0, y: 0 }}
+                style={style.header}
+                >
 
                     {/* Image */}
                     <Image source={require('../assets/icons/profile.png')} style={style.profile} />
@@ -194,9 +196,8 @@ export default function Chat({ route }) {
                     {/* Username */}
                     <Text style={style.username}>{otherUsername}</Text>
 
-                </View>
-                
-            </Shadow>
+                </LinearGradient>
+
 
             {/* Messages */}
             <ScrollView
@@ -316,9 +317,7 @@ const style = StyleSheet.create({
         width: 50,
         height: 50,
         marginRight: 10,
-        borderRadius: 100,
-        borderWidth: 2,
-        borderColor: '#1B4E6B'
+        borderRadius: 100
 
     },
 
@@ -348,7 +347,7 @@ const style = StyleSheet.create({
         marginHorizontal: 20,
         marginTop: 10,
         borderRadius: 13,
-        backgroundColor: generalColors.guestMessage
+        backgroundColor: generalColors.palette3
     },
 
     messageHost: {
@@ -360,7 +359,7 @@ const style = StyleSheet.create({
         marginHorizontal: 20,
         marginTop: 10,
         borderRadius: 13,
-        backgroundColor: generalColors.main
+        backgroundColor: generalColors.palette1
     },
 
     messageText: {
@@ -385,7 +384,7 @@ const style = StyleSheet.create({
         marginLeft: 19,
         justifyContent: 'center',
         borderRadius: 100,
-        backgroundColor: generalColors.messageMaker
+        backgroundColor: generalColors.palette4
         
     },
     messageInput: {
@@ -402,7 +401,7 @@ const style = StyleSheet.create({
         width: 45,
         height: 45,
         marginLeft: 10,
-        backgroundColor: generalColors.main,
+        backgroundColor: generalColors.palette1,
         justifyContent: 'center',
         alignItems: 'center'
     },
