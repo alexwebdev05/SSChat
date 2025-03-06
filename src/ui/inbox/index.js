@@ -5,6 +5,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { chatsStore } from '../../api/websocket/chats';
 
+// Theme
+import generalColors from '../../styles/generalColors';
+
+// Skeletons
+import Chats from '../skeletons/chats'
+
+// Images
+import profile from '../../../assets/phoneIcons/profile.png'
+
 // API
 import { socketConnection } from '../../api/websocket/websocket';
 import { getChats } from '../../api/websocket/chats';
@@ -151,49 +160,57 @@ export const Inbox = () => {
 
     // Render the Inbox component
     return (
-        <View style={style.container}>
-            <ScrollView
-            style={style.refreshContainer}
-                contentContainerStyle={style.refreshContainer}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                        colors={['#fff']}
+        <View>
+            {chatContent.length === 0 ? (
+                <Chats />
+            ) : (
+                <View style={style.container}>
+                    <ScrollView
+                    style={style.refreshContainer}
+                        contentContainerStyle={style.refreshContainer}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                                colors={['#fff']}
 
-                    />
-                }
-            >
-                {Object.entries(groupedChats).map(([otherUsername, data]) => (
-                    <TouchableOpacity
-                        onPress={() => handleNavigation(otherUsername, data.otherUserToken, data.roomToken)}
-                        key={data.otherUserToken}
-                        style={[
-                            style.chatContainer,
-                        ]}
+                            />
+                        }
                     >
-                        {/* Image */}
-                        <Image
-                            source={require('../../assets/icons/profile.png')}
-                            style={{ width: 60, height: 60, marginRight: 10 }}
-                        />
+                        {Object.entries(groupedChats).map(([otherUsername, data]) => (
+                            <TouchableOpacity
+                                onPress={() => handleNavigation(otherUsername, data.otherUserToken, data.roomToken)}
+                                key={data.otherUserToken}
+                                style={[
+                                    style.chatContainer,
+                                ]}
+                            >
+                                {/* Image */}
+                                <Image
+                                    source={profile}
+                                    style={{ width: 60, height: 60, marginRight: 10 }}
+                                />
 
-                        {/* Last message */}
-                        <View style={style.lastMessageContainer}>
-                            <View>
-                                <Text style={style.chatGroupHeader}>{otherUsername}</Text>
-                                <Text style={style.message}>{data.lastMessage.message}</Text>
-                            </View>
-                            
+                                {/* Last message */}
+                                <View style={style.lastMessageContainer}>
+                                    <View>
+                                        <Text style={style.chatGroupHeader}>{otherUsername}</Text>
+                                        <Text style={style.message}>{data.lastMessage.message}</Text>
+                                    </View>
+                                    
 
-                            <Text style={style.lastMessageDate}>{data.lastMessageDate}</Text>
-                        </View>
-                        
-                    </TouchableOpacity>
-                ))}
-            </ScrollView>
-            
+                                    <Text style={style.lastMessageDate}>{data.lastMessageDate}</Text>
+                                </View>
+                                
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
+                    
+                </View>
+            )}
         </View>
+
+        
     );
 };
 
@@ -208,12 +225,12 @@ const style = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 5,
-        color: 'white'
+        color: generalColors.color1
     },
     chatContainer: {
-        width: '100%',
+        flex: 1,
         padding: 10,
-
+        marginHorizontal: 10,
         flexDirection: 'row',
         alignItems: 'center',
     },
@@ -229,12 +246,12 @@ const style = StyleSheet.create({
     lastMessageDate: {
         fontSize: 12,
         marginTop: 7,
-        color: 'white'
+        color: generalColors.color1
     },
     refreshContainer: {
         width: '100%',
     },
     message: {
-        color: 'white'
+        color: generalColors.color1
     }
 });

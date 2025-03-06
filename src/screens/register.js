@@ -63,7 +63,7 @@ export default function Register({ onLogin }) {
                     <TextInput
                         style={style.input}
                         placeholder="Set username"
-                        placeholderTextColor="gray"
+                        placeholderTextColor={generalColors.input}
                         onChangeText={setUsername}
                     />
                 </View>
@@ -74,7 +74,7 @@ export default function Register({ onLogin }) {
                     <TextInput
                         style={style.input}
                         placeholder="example@example.com"
-                        placeholderTextColor="gray"
+                        placeholderTextColor={generalColors.input}
                         onChangeText={setEmail}
                     />
                 </View>
@@ -85,7 +85,7 @@ export default function Register({ onLogin }) {
                     <TextInput
                         style={style.input}
                         placeholder="••••••••••"
-                        placeholderTextColor="gray"
+                        placeholderTextColor={generalColors.input}
                         secureTextEntry={true}
                         onChangeText={setPassword}
                     />
@@ -97,7 +97,7 @@ export default function Register({ onLogin }) {
                     <TextInput
                         style={style.input}
                         placeholder="••••••••••"
-                        placeholderTextColor="gray"
+                        placeholderTextColor={generalColors.input}
                         secureTextEntry={true}
                         onChangeText={setConfirmPassword}
                     />
@@ -141,7 +141,7 @@ const style = StyleSheet.create({
         fontSize: 30,
         fontWeight: '800',
         marginBottom: 50,
-        color: 'white'
+        color: generalColors.color1
     },
 
     blocksContainer: {
@@ -154,16 +154,19 @@ const style = StyleSheet.create({
 
     blockTitle: {
         fontSize: 18,
+        color: generalColors.color1,
         marginBottom: 5,
-        color: 'white'
+        marginLeft: 15,
     },
 
     input: {
-        height: 35,
-        borderRadius: 10,
-        fontSize: 16,
-        backgroundColor: generalColors.input,
+        height: 40,
+        borderRadius: 20,
+        fontSize: 17,
+        borderWidth: 3,
+        borderColor: generalColors.main,
         paddingLeft: 20,
+        color: generalColors.color1
     },
 
     loginRegister: {
@@ -185,6 +188,7 @@ const style = StyleSheet.create({
     signIn: {
         textAlign: 'center',
         fontSize: 16,
+        color: generalColors.color1
     },
 
     registerContainer: {
@@ -195,7 +199,7 @@ const style = StyleSheet.create({
     register: {
         fontSize: 16,
         borderRadius: 5,
-        color: generalColors.palette1,
+        color: generalColors.link1,
         textDecorationLine: 'underline',
     },
 

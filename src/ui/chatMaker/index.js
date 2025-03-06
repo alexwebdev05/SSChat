@@ -5,8 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Shadow } from 'react-native-shadow-2';
 
 // Api
-import { api } from '../../api/url';
-import { chatsStore, newChat } from '../../api/websocket/chats';
+import { newChat } from '../../api/websocket/chats';
 
 // Assets
 import plus from '../../../assets/phoneIcons/addChat.png'
@@ -158,7 +157,7 @@ const style = StyleSheet.create({
     },
     newChatButtonText: {
         fontWeight: 'bold',
-        color: 'white'
+        color: generalColors.color1
     },
     inputEnter: {
         borderRadius: 15,

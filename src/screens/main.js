@@ -7,6 +7,9 @@ import { useEffect, useState } from 'react';
 import generalColors from '../styles/generalColors';
 import { StatusBar  } from 'expo-status-bar';
 
+// Images
+import options from '../../assets/phoneIcons/options.png'
+
 // UI
 import Header from '../ui/header';
 import { Inbox } from '../ui/inbox';
@@ -62,7 +65,7 @@ export default function Main({navigation}) {
 
             {/* Options */}
             <TouchableOpacity onPress={showMenu} style={style.options}>
-                <Image source={require( '../../assets/phoneIcons/options.png' )} style={{width: 20, height: 20,}}/>
+                <Image source={options} style={{width: 20, height: 20,}}/>
 
                 {/* Log Out */}
                 {isOptionMenuVisible && (

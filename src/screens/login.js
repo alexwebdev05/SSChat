@@ -60,7 +60,7 @@ export default function Login({ onLogin }) {
                     <TextInput
                         style={style.input}
                         placeholder="example@example.com"
-                        placeholderTextColor="gray"
+                        placeholderTextColor={generalColors.input2}
                         onChangeText={setEmail}
                     />
                 </View>
@@ -71,7 +71,7 @@ export default function Login({ onLogin }) {
                     <TextInput
                         style={style.input}
                         placeholder="••••••••••"
-                        placeholderTextColor="gray"
+                        placeholderTextColor={generalColors.input2}
                         secureTextEntry={true}
                         onChangeText={setPassword}
                     />
@@ -117,7 +117,7 @@ const style = StyleSheet.create({
         fontSize: 30,
         fontWeight: 800,
         marginBottom: 50,
-        color: 'white'
+        color: generalColors.color1
     },
 
     blocksContainer: {
@@ -131,15 +131,18 @@ const style = StyleSheet.create({
     blockTitle: {
         fontSize: 18,
         marginBottom: 5,
-        color: 'white'
+        marginLeft: 15,
+        color: generalColors.color1
     },
 
     input: {
-        height: 35,
-        borderRadius: 10,
-        fontSize: 16,
-        backgroundColor: generalColors.input,
-        paddingLeft: 20
+        height: 40,
+        borderRadius: 20,
+        fontSize: 17,
+        borderWidth: 4,
+        borderColor: generalColors.palette1,
+        paddingLeft: 20,
+                color: generalColors.color1
     },
 
     loginRegister: {
@@ -162,7 +165,7 @@ const style = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 800,
         fontSize: 16,
-        color: 'white'
+        color: generalColors.color1
     },
 
     registerContainer: {
@@ -173,7 +176,7 @@ const style = StyleSheet.create({
     register: {
         fontSize: 16,
         borderRadius: 5,
-        color: generalColors.palette1,
+        color: generalColors.link1,
         textDecorationLine: 'underline'
     },
 

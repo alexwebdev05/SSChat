@@ -26,16 +26,17 @@ const { width } = Dimensions.get('window');
 const style = StyleSheet.create({
     container: {
         width: width,
-        height: 105,
+        height: 110,
         alignItems: 'center',
         justifyContent: 'flex-end',
         borderRadius: 20,
-        paddingBottom: 20,
+        paddingBottom: 25,
+        marginBottom: 20
     },
     title: {
         fontSize: 23,
         fontWeight: '800',
         textAlign: 'center',
-        color: 'white',
+        color: generalColors.color1
     },
 });

@@ -2,9 +2,16 @@
 import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, Dimensions, ScrollView, AppState } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Shadow } from 'react-native-shadow-2';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
+
+// Skeleton screens
+import Messages from '../ui/skeletons/message'
+
+// Images
+import profile from '../../assets/phoneIcons/profile.png'
+import send from '../../assets/phoneIcons/send.png'
+import mic from '../../assets/phoneIcons/mic.png'
 
 // Theme
 import generalColors from '../styles/generalColors';
@@ -27,6 +34,9 @@ export default function Chat({ route }) {
 
     // Chat messages
     const [messages, setMessages] = useState([]);
+
+    // Messages loading
+    const [isLoading, setIsLoading] = useState(true)
 
     // New messages
     const [promisedMessage, setPromisedMessage] = useState('');
@@ -103,17 +113,22 @@ export default function Chat({ route }) {
 
         const localMessages = async () => {
             const messages = await AsyncStorage.getItem(otherUserToken)
-            setMessages(JSON.parse(messages))
+            if (messages) {
+                setMessages(JSON.parse(messages))
+            }
+            setIsLoading(false)
         }
+        
         localMessages()
         
-    }, [])
+    }, [otherUserToken])
 
     // Refresh messages
     useEffect(() => {
         const handleMessagesUpdate = () => {
             // Actualiza el estado con los nuevos mensajes
             setMessages(messagesStore.getMessages(otherUserToken));
+            setIsLoading(false)
         };
     
         // Escuchar cambios de mensajes en messagesStore con addListener (FBEmitter)
@@ -191,7 +206,7 @@ export default function Chat({ route }) {
                 >
 
                     {/* Image */}
-                    <Image source={require('../assets/icons/profile.png')} style={style.profile} />
+                    <Image source={profile} style={style.profile} />
 
                     {/* Username */}
                     <Text style={style.username}>{otherUsername}</Text>
@@ -200,16 +215,19 @@ export default function Chat({ route }) {
 
 
             {/* Messages */}
-            <ScrollView
-                style={style.messageContainer}
-                ref={scrollViewRef}
-                onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: false })}
-            >
-                {(messages === null || messages.length === 0) ? (
-                    // Mensaje en caso de que no haya mensajes aún
-                    <Text></Text>
-                ) : (
-                    messages.map((message, index) => {
+            {isLoading || messages.length === 0 ? (
+                <View style={style.messageContainer}>
+                    <Messages />
+                </View>
+            ) : (
+
+                <ScrollView
+                    style={style.messageContainer}
+                    ref={scrollViewRef}
+                    onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: false })}
+                >
+                   
+                   {Array.isArray(messages) && messages.map((message, index) => {
                         const currentDate = new Date(message.created_at).toDateString();
                         const previousDate = index > 0 ? new Date(messages[index - 1].created_at).toDateString() : null;
 
@@ -224,7 +242,7 @@ export default function Chat({ route }) {
                                     <View style={style.message}>
                                         <Text style={style.messageText}>{message.message}</Text>
                                         <Text style={style.messageDate}>{dateFormatter(message.created_at)}</Text>
-                                    </View>
+                                   </View>
                                 ) : (
                                     <View style={style.userHost}>
                                         <View style={style.messageHost}>
@@ -235,8 +253,9 @@ export default function Chat({ route }) {
                                 )}
                             </View>
                         );
-                    }))}
-            </ScrollView>
+                    })}
+                </ScrollView>
+            )}
 
             {/* Message sender */}
             
@@ -245,7 +264,7 @@ export default function Chat({ route }) {
                     {/* Message setter */}
                     <TextInput 
                     placeholder='Message'
-                    placeholderTextColor="#afb5b8"
+                    placeholderTextColor={generalColors.input2}
 
                     // Set message on real time
                     onChangeText={setPromisedMessage}
@@ -265,7 +284,7 @@ export default function Chat({ route }) {
                         onFocus={() => setPromisedMessage('')}
                         style={style.sendButton}
                         >
-                            <Image source={require('../assets/icons/send.png')} style={style.send} />
+                            <Image source={send} style={style.send} />
                         </TouchableOpacity>
                     ) : (
 
@@ -279,7 +298,7 @@ export default function Chat({ route }) {
                         onFocus={() => setPromisedMessage('')}
                         style={style.sendButton}
                         >
-                            <Image source={require('../assets/icons/mic.png')} style={style.mic} />
+                            <Image source={mic} style={style.mic} />
                         </TouchableOpacity>
                     )}
                 </View>
@@ -324,7 +343,7 @@ const style = StyleSheet.create({
     username: {
         fontSize: 20,
         fontWeight: 600,
-        color: 'white'
+        color: generalColors.color1
     },
 
     // Messages
@@ -365,14 +384,14 @@ const style = StyleSheet.create({
     messageText: {
         fontSize: 16,
         fontWeight: 500,
-        color: 'white'
+        color: generalColors.color1
     },
 
     messageDate: {
         fontSize: 10,
         fontWeight: 500,
         marginLeft: 10,
-        color: 'white'
+        color: generalColors.color1
     },
 
     // Bottom Options
@@ -384,7 +403,7 @@ const style = StyleSheet.create({
         marginLeft: 19,
         justifyContent: 'center',
         borderRadius: 100,
-        backgroundColor: generalColors.palette4
+        backgroundColor: generalColors.input1
         
     },
     messageInput: {
@@ -392,7 +411,7 @@ const style = StyleSheet.create({
         marginLeft: 15,
         fontWeight: 800,
         fontSize: 16,
-        color: 'white'
+        color: generalColors.color1
     },
     sendButton: {
         borderRadius: 100,

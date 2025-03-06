@@ -29,10 +29,30 @@ export default generalColors = {
     
 
 
+    // ----- Paletters -----
+    palette1: '#3a52ed',    // Main
+    palette2: '#181141',    // 
+    palette3: '#585870',    //
+    palette4: '#1c2873',    //
 
-    palette1: '#3a52ed',
-    palette2: '#181141',
-    palette3: '#585870',
-    palette4: '#1c2873',
+    // ----- Text -----
+    color1: '#FFFFFF',      // White
+
+    // ----- Background -----
+    back: '#030712',        // Bacground
+
+    back1: '#000000',       // Gradient1
+    back2: '#000000',       // Gradient1
+
+    // ----- Input -----
+    input1: '#1c2873',      // Bacground
+    input2: '#afb5b8',      // Text
+
+    // ----- Links -----
+    link1: '#ffffff',   
+
+    // ----- Skeletons -----
+    skeleton1: '#383f53',
+    skeleton2: '#262b39'
 
 }
