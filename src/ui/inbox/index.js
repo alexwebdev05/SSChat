@@ -215,12 +215,19 @@ export const Inbox = () => {
                             <RefreshControl
                                 refreshing={refreshing}
                                 onRefresh={onRefresh}
-                                colors={['#fff']}
+                                colors={['#000']}
                             />
                         }
                     >
-                        {/* Map through grouped chats and render each chat item */}
-                        {Object.entries(groupedChats).map(([otherUsername, data]) => (
+                        {/* Map through grouped chats and render each chat item, sorted by most recent message */}
+                        {Object.entries(groupedChats)
+                            .sort((a, b) => {
+                                // Sort by comparing message timestamps (newest first)
+                                const dateA = new Date(a[1].lastMessage.created_at);
+                                const dateB = new Date(b[1].lastMessage.created_at);
+                                return dateB - dateA;
+                            })
+                            .map(([otherUsername, data]) => (
                             <TouchableOpacity
                                 onPress={() => handleNavigation(otherUsername, data.otherUserToken, data.roomToken)}
                                 key={data.otherUserToken}

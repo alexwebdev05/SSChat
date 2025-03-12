@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { register } from '../api/register';
 
 // Assets
-import logo from '../assets/logo.webp';
+import logo from '../../assets/icon.png';
 
 // Theme
 import generalColors from '../styles/generalColors';

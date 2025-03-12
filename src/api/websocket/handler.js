@@ -88,6 +88,7 @@ export function handleMessageResponse(type, userID, response) {
             break
         case 'user-joined':
             console.log(response)
+            break
         default:
             console.warn("⚠️ Unknown message type received:", type);
     }

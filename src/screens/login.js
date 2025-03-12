@@ -8,7 +8,7 @@ import { StatusBar  } from 'expo-status-bar';
 import { signIn } from '../api/login';
 
 // Assets
-import logo from '../assets/logo.webp';
+import logo from '../../assets/icon.png';
 
 // Theme
 import generalColors from '../styles/generalColors';

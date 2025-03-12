@@ -76,7 +76,7 @@ export default function Chat({ route }) {
         getLocalUser();
     }, []);
 
-    //** Initialize and mantain WebSocket connection */
+    //** Initialize and maintain WebSocket connection */
     useEffect(() => {
         // Set function
         const wsUpdater = () => {
@@ -129,17 +129,17 @@ export default function Chat({ route }) {
     /** Refresh messages */
     useEffect(() => {
         const handleMessagesUpdate = () => {
-            // Actualiza el estado con los nuevos mensajes
+            // Update state with nem messages
             setMessages(messagesStore.getMessages(otherUserToken));
             setIsLoading(false)
         };
     
-        // Escuchar cambios de mensajes en messagesStore con addListener (FBEmitter)
+        // Listen hot changes
         const listener = messagesStore.eventEmitter.addListener('updateMessages', handleMessagesUpdate);
     
-        // Cleanup cuando el componente se desmonte
+        // Clean
         return () => {
-            listener.remove(); // Usamos 'remove' en lugar de 'removeListener'
+            listener.remove();
         };
     }, []);
 
@@ -171,7 +171,9 @@ export default function Chat({ route }) {
 
     // Send message
     const send = async (promisedMessage) => {
-        sendMessage(localUser, otherUserToken, roomToken, promisedMessage);
+        if (promisedMessage !== "") {
+            sendMessage(localUser, otherUserToken, roomToken, promisedMessage);
+        }
         setPromisedMessage('');
     };
 
@@ -217,7 +219,7 @@ export default function Chat({ route }) {
                         const previousDate = index > 0 ? new Date(messages[index - 1].created_at).toDateString() : null;
                         // Message
                         return (
-                            // Each message haves his own unic id
+                            // Each message haves his own unique id
                             <View key={message.id}>
                                 {/* Shows if the last message haves same date */}
                                 {currentDate !== previousDate && (
@@ -257,34 +259,17 @@ export default function Chat({ route }) {
                 style={style.messageInput}
                 />
                 {/* Send button or audio button */}
-                {promisedMessage !== '' ? (
-                    // --- Send button ---
-                    <TouchableOpacity
-                    // Call send function
-                    onPress={() => send(promisedMessage)}
-                    // Reset message
-                    onFocus={() => setPromisedMessage('')}
-                    // Style
-                    style={style.sendButton}
-                    >
-                        {/* Imege */}
-                        <Image source={sendImg} style={style.send} />
-                    </TouchableOpacity>
-                ) : (
-
-                    // --- Audio button ---
-                    <TouchableOpacity
-                    // Call send function
-                    onPress={() => send(promisedMessage)}
-                    // Reset message
-                    onFocus={() => setPromisedMessage('')}
-                    // Style
-                    style={style.sendButton}
-                    >
-                        {/* Image */}
-                        <Image source={mic} style={style.mic} />
-                    </TouchableOpacity>
-                )}
+                <TouchableOpacity
+                // Call send function
+                onPress={() => send(promisedMessage)}
+                // Reset message
+                onFocus={() => setPromisedMessage('')}
+                // Style
+                style={style.sendButton}
+                >
+                    {/* Image */}
+                    <Image source={sendImg} style={style.send} />
+                </TouchableOpacity>
             </View>
         </View>
     )
