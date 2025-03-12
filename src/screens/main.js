@@ -27,7 +27,7 @@ export default function Main({navigation}) {
         NavigationBar.setBackgroundColorAsync(generalColors.back);
     }, []);
 
-    // ----- Functions -----
+    // ----- Functions  --------------------------------------------------------------------------
 
     // Change menu visibility
     const showMenu = async () => {
@@ -50,7 +50,7 @@ export default function Main({navigation}) {
         setIsOptionMenuVisible(false)
     }
 
-    // ----- DOM -----
+    // ----- DOM ----- ---------------------------------------------------------------------------
     return (
         <View style={style.screen}>
 
@@ -95,7 +95,8 @@ export default function Main({navigation}) {
     )
 }
 
-// ----- Styles -----
+// ----- Styles ----- ----------------------------------------------------------------------------
+
 const style = StyleSheet.create({
     screen: {
         width: '100%',

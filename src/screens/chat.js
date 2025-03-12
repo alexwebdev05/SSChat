@@ -10,120 +10,123 @@ import Messages from '../ui/skeletons/message'
 
 // Images
 import profile from '../../assets/phoneIcons/profile.png'
-import send from '../../assets/phoneIcons/send.png'
+import sendImg from '../../assets/phoneIcons/send.png'
 import mic from '../../assets/phoneIcons/mic.png'
 
 // Theme
 import generalColors from '../styles/generalColors';
 import { StatusBar } from 'expo-status-bar';
-import { messagesStore } from '../api/websocket/messages';
 
 // Api
 import { getWebSocket } from '../api/websocket/websocket';
 import { enterRoom, leaveRoom } from '../api/websocket/rooms';
 import { sendMessage, getMessages } from '../api/websocket/messages';
+import { messagesStore } from '../api/websocket/messages';
 
 // Utils
 import { dateFormatter } from '../utils/dateFormatter';
 
 export default function Chat({ route }) {
-    // ----- States -----
 
-    // Local user data
-    const [localUser, setLocalUser] = useState('');
-
-    // Chat messages
-    const [messages, setMessages] = useState([]);
-
-    // Messages loading
-    const [isLoading, setIsLoading] = useState(true)
-
-    // New messages
-    const [promisedMessage, setPromisedMessage] = useState('');
-
-    // Scroll view reference
-    const scrollViewRef = useRef(null);
-
-    // To detect when user navigates to other screen
-    const nav = useNavigation();
-
-    // To detect when user is watching the component
-    const isFocused = useIsFocused();
+    // ----- Route parameters ---------------------------------------------------------------
 
     // Other user token and name | Room token
     const { otherUsername, otherUserToken, roomToken} = route.params;
 
+    // ----- States -------------------------------------------------------------------------
+
+    /** Local user data (Token) */
+    const [localUser, setLocalUser] = useState('');
+
+    /** Chat messages */
+    const [messages, setMessages] = useState([]);
+
+    /** Messages loading (Is waiting to receive messages) */
+    const [isLoading, setIsLoading] = useState(true)
+
+    /** New messages (Message that whe are sending) */
+    const [promisedMessage, setPromisedMessage] = useState('');
+
+    /** Scroll view reference */
+    const scrollViewRef = useRef(null);
+
+    // ----- Variables ----------------------------------------------------------------------
+
+    /** To detect when user navigates to other screen */
+    const nav = useNavigation();
+
+    /** To detect when user is watching the component */
+    const isFocused = useIsFocused();
+
+    /** Websocket connection saver */
     const [socket, setSocket] = useState(null);
 
-    // ----- Effects -----
+    // ----- Effects ------------------------------------------------------------------------
 
-    // Get local user data | Socket connection
+    /** Load local user data from AsyncStorage */
     useEffect(() => {
-
-        // Get local user
         const getLocalUser = async () => {
+            // Get data
             const localData = await AsyncStorage.getItem('userData');
+            // Parse data
             const userData = JSON.parse(localData);
+            // Set in state variable
             setLocalUser(userData.token);
         };
         getLocalUser();
-
     }, []);
 
-    // Get socket
+    //** Initialize and mantain WebSocket connection */
     useEffect(() => {
+        // Set function
         const wsUpdater = () => {
+            // Get socket connection
             const ws = getWebSocket()
+            // Set socket connection in state variable
             setSocket(ws)
         }
-        
+        // Make an interval with the function
         const interval = setInterval(wsUpdater, 500);
-
+        // Clear interval when component is unmount
         return () => clearInterval(interval);
     }, [])
 
-    // Enter room
+    /** Enter chat room when socket, localUser or isFocused changes */
     useEffect(() => {
         // Checks if the user is loaded and socket is connected
         if (!socket || !localUser || !isFocused) return;
-
-        // Enter room
+        // Enter chat room
         enterRoom( localUser, roomToken);
     }, [socket, localUser, isFocused]);
 
-    // Request messages
+    /** Request messages */
     useEffect(() => {
         // Checks if the user is loaded and socket is connected
         if (!socket || !localUser) return;
-
         // Fetch messages once or on socket change
         const fetchMessages = async () => {
             getMessages(localUser, otherUserToken);
         };
-
         // Fetch messages when component mounts
         fetchMessages();
-
-        // Cleanup if needed (optional, depending on how `getMessages` works)
-        return () => {};
     }, [socket, localUser, otherUserToken]);
 
-    // Set local messages before receive new messages
+    /** Update messages at the moment of receive a new one */
     useEffect(() => {
-
         const localMessages = async () => {
+            // Get data
             const messages = await AsyncStorage.getItem(otherUserToken)
             if (messages) {
+                // Set messages in state variable
                 setMessages(JSON.parse(messages))
             }
+            // Set is not waiting for new messages in state variable
             setIsLoading(false)
         }
-        
         localMessages()
-        
     }, [otherUserToken])
 
-    // Refresh messages
+    /** Refresh messages */
     useEffect(() => {
         const handleMessagesUpdate = () => {
             // Actualiza el estado con los nuevos mensajes
@@ -140,48 +143,31 @@ export default function Chat({ route }) {
         };
     }, []);
 
-    // Log messages
-    // useEffect(() => {
-    //     // Establece un intervalo que haga un console.log cada segundo
-    //     const interval = setInterval(() => {
-    //       console.log('Messages:', messagesStore.messages);  // Muestra los mensajes almacenados
-    //     }, 1000); // Ejecuta cada 1000 ms (1 segundo)
-    
-    //     // Limpia el intervalo cuando el componente se desmonte
-    //     return () => clearInterval(interval);
-    
-    //   }, []);
-
-
-    // Move to bottom of the chat
+    /** Scroll to bottom of the chat */
     useEffect(() => {
         if (scrollViewRef.current) {
             setTimeout(() => {
                 scrollViewRef.current.scrollToEnd({ animated: true });
-            }, 100); // Pequeño delay para asegurar que el scroll funcione bien
+            }, 100);
         }
     }, [messages]);
 
-    // Cleanup before navigating away
+    /** Cleanup before unmount component */
     useEffect(() => {
         const unsubscribe = nav.addListener('beforeRemove', (e) => {
             // Prevent default behavior of leaving the screen
             e.preventDefault();
-
             // Leave chat room
             leaveRoom(localUser, roomToken);
-
-
+            // Clear messages
             setMessages([])
-
             // Navigate away
             nav.dispatch(e.data.action);
         });
-
         return unsubscribe;
     }, [nav, localUser, roomToken]);
 
-    // ----- Functions -----
+    // ----- Functions ----------------------------------------------------------------------
 
     // Send message
     const send = async (promisedMessage) => {
@@ -189,55 +175,55 @@ export default function Chat({ route }) {
         setPromisedMessage('');
     };
 
-    // ----- DOM -----
+    // ----- DOM ----------------------------------------------------------------------------
+    
     return (
         <View style={style.screen}>
 
-            {/* Transparent StatusBar */}
+            {/* Status bar style */}
             <StatusBar style="light" />
             
             {/* Header */}
-
-                <LinearGradient
-                colors={[generalColors.palette1, generalColors.palette2]}
-                start={{ x: 0, y: 1 }}
-                end={{ x: 0, y: 0 }}
-                style={style.header}
-                >
-
-                    {/* Image */}
-                    <Image source={profile} style={style.profile} />
-
-                    {/* Username */}
-                    <Text style={style.username}>{otherUsername}</Text>
-
-                </LinearGradient>
+            <LinearGradient
+            colors={[generalColors.palette1, generalColors.palette2]}
+            start={{ x: 0, y: 1 }}
+            end={{ x: 0, y: 0 }}
+            style={style.header}
+            >
+                {/* Image */}
+                <Image source={profile} style={style.profile} />
+                {/* Username */}
+                <Text style={style.username}>{otherUsername}</Text>
+            </LinearGradient>
 
 
-            {/* Messages */}
+            {/* Messages section - shows skeleton loader or messages */}
             {isLoading || messages.length === 0 ? (
                 <View style={style.messageContainer}>
                     <Messages />
                 </View>
             ) : (
-
+                // Scroll to bottom
                 <ScrollView
                     style={style.messageContainer}
                     ref={scrollViewRef}
                     onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: false })}
                 >
-                   
+                   {/* Write messages responsively */}
                    {Array.isArray(messages) && messages.map((message, index) => {
+                        // Get current message date
                         const currentDate = new Date(message.created_at).toDateString();
+                        // Get previous message date
                         const previousDate = index > 0 ? new Date(messages[index - 1].created_at).toDateString() : null;
-
+                        // Message
                         return (
+                            // Each message haves his own unic id
                             <View key={message.id}>
-                                {/* Mostrar la fecha si es diferente a la del mensaje anterior */}
+                                {/* Shows if the last message haves same date */}
                                 {currentDate !== previousDate && (
                                     <Text style={style.dateSeparator}>{currentDate}</Text>
                                 )}
-
+                                {/* Set styles depending of the sender of message */}
                                 {message.sender === otherUserToken ? (
                                     <View style={style.message}>
                                         <Text style={style.messageText}>{message.message}</Text>
@@ -258,59 +244,54 @@ export default function Chat({ route }) {
             )}
 
             {/* Message sender */}
-            
-                <View style={style.messageCreator}>
+            <View style={style.messageCreator}>
+                {/* Message input */}
+                <TextInput 
+                // Placeholder
+                placeholder='Message'
+                placeholderTextColor={generalColors.input2}
+                // Set message on real time
+                onChangeText={setPromisedMessage}
+                value={promisedMessage}
+                // Style
+                style={style.messageInput}
+                />
+                {/* Send button or audio button */}
+                {promisedMessage !== '' ? (
+                    // --- Send button ---
+                    <TouchableOpacity
+                    // Call send function
+                    onPress={() => send(promisedMessage)}
+                    // Reset message
+                    onFocus={() => setPromisedMessage('')}
+                    // Style
+                    style={style.sendButton}
+                    >
+                        {/* Imege */}
+                        <Image source={sendImg} style={style.send} />
+                    </TouchableOpacity>
+                ) : (
 
-                    {/* Message setter */}
-                    <TextInput 
-                    placeholder='Message'
-                    placeholderTextColor={generalColors.input2}
-
-                    // Set message on real time
-                    onChangeText={setPromisedMessage}
-                    value={promisedMessage}
-                    style={style.messageInput}
-                    />
-
-                    {promisedMessage !== '' ? (
-                        
-                        // --- Send button ---
-                        <TouchableOpacity
-
-                        // Call send function
-                        onPress={() => send(promisedMessage)}
-
-                        // Reset message
-                        onFocus={() => setPromisedMessage('')}
-                        style={style.sendButton}
-                        >
-                            <Image source={send} style={style.send} />
-                        </TouchableOpacity>
-                    ) : (
-
-                        // --- Audio button ---
-                        <TouchableOpacity
-
-                        // Call send function
-                        onPress={() => send(promisedMessage)}
-
-                        // Reset message
-                        onFocus={() => setPromisedMessage('')}
-                        style={style.sendButton}
-                        >
-                            <Image source={mic} style={style.mic} />
-                        </TouchableOpacity>
-                    )}
-                </View>
-            
-            
-
+                    // --- Audio button ---
+                    <TouchableOpacity
+                    // Call send function
+                    onPress={() => send(promisedMessage)}
+                    // Reset message
+                    onFocus={() => setPromisedMessage('')}
+                    // Style
+                    style={style.sendButton}
+                    >
+                        {/* Image */}
+                        <Image source={mic} style={style.mic} />
+                    </TouchableOpacity>
+                )}
+            </View>
         </View>
     )
 
 }
 
-// ----- Styles -----
+// ----- Styles -----------------------------------------------------------------------------
 const { width } = Dimensions.get('window');
 
 const style = StyleSheet.create({
@@ -413,6 +394,8 @@ const style = StyleSheet.create({
         fontSize: 16,
         color: generalColors.color1
     },
+
+    // Button
     sendButton: {
         borderRadius: 100,
         bottom: 0,
@@ -425,6 +408,7 @@ const style = StyleSheet.create({
         alignItems: 'center'
     },
 
+    // Date
     dateSeparator: {
         textAlign: 'center',
         marginVertical: 10,

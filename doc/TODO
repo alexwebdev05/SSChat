@@ -1,0 +1,29 @@
+General:
+    ☐ Comment all code correctly @high
+
+Websocket:
+    File: src\api\websocket\chats.js 
+    ☐ Look getChats function and modify it to use an alternative of interval @high
+
+    File: src\api\websocket\messages.js
+    ☐ Look getMessages function and modify it to use an alternative of interval @high
+
+    File: src\api\websocket\rooms.js
+    ☐ Look enterRoom function and search for an alternative of interval @high
+    ☐ Look leaveRoom function and search for an alternative of interval @high
+
+    File: src\api\websocket\handler.js
+    ☐ Look problem with 'checked-token' @critical
+
+    File: src\api\connection.js
+    ☐ Do not depend of this file @high
+
+Inbox:
+    ☐ Make an waiting to watch message @low
+
+Chat:
+    ☐ Create seen message option @low
+
+Assets:
+    File: src\assets
+    ☐ Migrate this files to primary assets

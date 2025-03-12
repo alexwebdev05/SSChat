@@ -1,5 +1,6 @@
-// Enter the room
+/** Enter the room */
 export const enterRoom = async ( localUser, roomToken) => {
+    // Get actual socket connection
     const { getWebSocket } = await import('./websocket');
     const send = setInterval(() => {
         clearInterval(send);
@@ -12,8 +13,9 @@ export const enterRoom = async ( localUser, roomToken) => {
     }, 500);
 };
 
-// Leave the room
+/** Leave the room */
 export const leaveRoom = async (localUser, roomToken) => {
+    // Get actual socket connection
     const { getWebSocket } = await import('./websocket');
     const send = setInterval(() => {
         clearInterval(send);

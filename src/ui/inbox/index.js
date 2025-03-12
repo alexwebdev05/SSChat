@@ -22,20 +22,42 @@ import { getChats } from '../../api/websocket/chats';
 import { dateFormatter } from '../../utils/dateFormatter';
 import { messagesStore } from '../../api/websocket/messages';
 
+/**
+ * Inbox Component - Displays user's chat conversations
+ * @returns {JSX.Element} Inbox screen component
+ */
 export const Inbox = () => {
-    // State variables to store chat data, user token, and grouped chats
+    // ----- States -------------------------------------------------------------------------
+    
+    /** List of chat conversations */
     const [chatContent, setChatContent] = useState([]);
+    
+    /** Current user's token */
     const [localUserToken, setLocalUserToken] = useState('');
+    
+    /** Chats grouped by other user */
     const [groupedChats, setGroupedChats] = useState({});
+    
+    /** WebSocket connection status */
     const [isSocketConnected, setIsSocketConnected] = useState(false);
-    const [socket, setSocket] = useState(null)
+    
+    /** WebSocket instance */
+    const [socket, setSocket] = useState(null);
+    
+    /** Pull-to-refresh status */
     const [refreshing, setRefreshing] = useState(false);
 
+    // ----- Variables ----------------------------------------------------------------------
+    
+    /** Navigation hook for screen transitions */
     const navigation = useNavigation();
 
-    // Fetch local user data from AsyncStorage
+    // ----- Effects ------------------------------------------------------------------------
+    
+    /** 
+     * Load local user data from AsyncStorage 
+     */
     useEffect(() => {
-
         const localUser = async () => {
             const userData = await AsyncStorage.getItem('userData');
             const parsedData = JSON.parse(userData)
@@ -46,39 +68,44 @@ export const Inbox = () => {
         
     }, []);
 
-    // Websocket connection
+    /** 
+     * Establish WebSocket connection when user token is available 
+     */
     useEffect(() => {
-
         // Check local user UUID
         if (!localUserToken || isSocketConnected) return;
-
 
         const cleanupWebSocket = socketConnection(setIsSocketConnected, setSocket);
 
         cleanupWebSocket;
 
-        }, [localUserToken]);
+    }, [localUserToken]);
 
-    // Set Local chats
+    /** 
+     * Load chats from local storage on initial render 
+     */
     useEffect(() => {
-
         const getLocalChats = async () => {
             const chatsStr = await AsyncStorage.getItem('chats');
             const chats = chatsStr ? JSON.parse(chatsStr) : [];
             setChatContent(chats);
-          };
+        };
         
-          getLocalChats();
+        getLocalChats();
     }, [])
 
-    // Request new chats
+    /** 
+     * Request new chats from server when socket is connected 
+     */
     useEffect(() => {
         if (localUserToken && socket && typeof socket.send === 'function' ) {
             getChats(localUserToken, socket)
         }
     }, [localUserToken, socket])
 
-    // Update chats
+    /** 
+     * Listen for chat updates from chatsStore 
+     */
     useEffect(() => {
         const handleMessageUpdate = () => {
             setChatContent([...chatsStore.getMessages()]);
@@ -88,7 +115,9 @@ export const Inbox = () => {
         return () => listener.remove();
     }, [])
 
-    // Group chats by other user when chatContent changes
+    /** 
+     * Group chats by other user when chatContent changes 
+     */
     useEffect(() => {
         const groupChats = () => {
           if (!chatContent || chatContent.length === 0) return;
@@ -117,7 +146,9 @@ export const Inbox = () => {
         groupChats();
     }, [chatContent]);
 
-    // Update chat las message
+    /** 
+     * Update chat last message when new messages arrive 
+     */
     useEffect(() => {
         const handleNewMessage = ({ receiver, newMessage }) => {
             setChatContent(prevChats => {
@@ -134,7 +165,7 @@ export const Inbox = () => {
             });
         };
     
-        // Suscribirse al evento
+        // Subscribe to the event
         const subscription = messagesStore.eventEmitter.addListener('newMessage', handleNewMessage);
     
         // Cleanup
@@ -143,7 +174,12 @@ export const Inbox = () => {
         };
     }, []);
 
-    // Handle the pull-to-refresh action
+    // ----- Functions ----------------------------------------------------------------------
+    
+    /**
+     * Handle pull-to-refresh action
+     * Requests new chats from server
+     */
     const onRefresh = async () => {
         setRefreshing(true);
         // Request new chats or refresh chat list here
@@ -153,30 +189,37 @@ export const Inbox = () => {
         setRefreshing(false);
     };
 
-    // Navigate to Chat screen with selected chat details
+    /**
+     * Navigate to Chat screen with selected chat details
+     * @param {string} otherUsername - Username of the other user
+     * @param {string} otherUserToken - Token of the other user
+     * @param {string} roomToken - Token of the chat room
+     */
     const handleNavigation = (otherUsername, otherUserToken, roomToken) => {
         navigation.navigate('Chat', { otherUsername, otherUserToken, roomToken });
     };
 
-    // Render the Inbox component
+    // ----- DOM ----------------------------------------------------------------------------
     return (
         <View>
+            {/* Show skeleton loader when no chats are available */}
             {chatContent.length === 0 ? (
                 <Chats />
             ) : (
                 <View style={style.container}>
+                    {/* Scrollable chat list with pull-to-refresh */}
                     <ScrollView
-                    style={style.refreshContainer}
+                        style={style.refreshContainer}
                         contentContainerStyle={style.refreshContainer}
                         refreshControl={
                             <RefreshControl
                                 refreshing={refreshing}
                                 onRefresh={onRefresh}
                                 colors={['#fff']}
-
                             />
                         }
                     >
+                        {/* Map through grouped chats and render each chat item */}
                         {Object.entries(groupedChats).map(([otherUsername, data]) => (
                             <TouchableOpacity
                                 onPress={() => handleNavigation(otherUsername, data.otherUserToken, data.roomToken)}
@@ -185,20 +228,22 @@ export const Inbox = () => {
                                     style.chatContainer,
                                 ]}
                             >
-                                {/* Image */}
+                                {/* User profile image */}
                                 <Image
                                     source={profile}
                                     style={{ width: 60, height: 60, marginRight: 10 }}
                                 />
 
-                                {/* Last message */}
+                                {/* Chat information container */}
                                 <View style={style.lastMessageContainer}>
                                     <View>
+                                        {/* Username */}
                                         <Text style={style.chatGroupHeader}>{otherUsername}</Text>
+                                        {/* Last message preview */}
                                         <Text style={style.message}>{data.lastMessage.message}</Text>
                                     </View>
                                     
-
+                                    {/* Last message timestamp */}
                                     <Text style={style.lastMessageDate}>{data.lastMessageDate}</Text>
                                 </View>
                                 
@@ -209,24 +254,27 @@ export const Inbox = () => {
                 </View>
             )}
         </View>
-
-        
     );
 };
 
-// Styles for the Inbox component
+// ----- Styles -----------------------------------------------------------------------------
 const style = StyleSheet.create({
+    // Main container
     container: {
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center'
     },
+    
+    // Chat header styling
     chatGroupHeader: {
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 5,
         color: generalColors.color1
     },
+    
+    // Individual chat item container
     chatContainer: {
         flex: 1,
         padding: 10,
@@ -235,7 +283,7 @@ const style = StyleSheet.create({
         alignItems: 'center',
     },
 
-    // Last messages
+    // Last message container
     lastMessageContainer: {
         flex: 1,
         flexDirection: 'row',
@@ -243,14 +291,19 @@ const style = StyleSheet.create({
         alignItems: 'flex-start'
     },
 
+    // Last message timestamp
     lastMessageDate: {
         fontSize: 12,
         marginTop: 7,
         color: generalColors.color1
     },
+    
+    // Refresh container
     refreshContainer: {
         width: '100%',
     },
+    
+    // Message text
     message: {
         color: generalColors.color1
     }
