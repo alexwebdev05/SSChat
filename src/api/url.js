@@ -4,14 +4,14 @@ export const api = {
     url: `https://${API}/api`,
     
     // Users
-    registerUser: `https://${API}/api/users/registeruser`,
-    checkUsers: `https://${API}/api/users/checkuser`,
-    checkToken: `https://${API}/api/users/checktoken`,
+    registerUser: `https://sschat-api-production.up.railway.app/api/users/registeruser`,
+    checkUsers: `https://sschat-api-production.up.railway.app/api/users/checkuser`,
+    checkToken: `https://sschat-api-production.up.railway.app/api/users/checktoken`,
 
     // Chats
-    newChat: `https://${API}/api/chats/newchat`,
-    getChats: `https://${API}/api/chats/getchats`,
+    newChat: `https://sschat-api-production.up.railway.app/api/chats/newchat`,
+    getChats: `https://sschat-api-production.up.railway.app/api/chats/getchats`,
 
     // WebSocket
-    websocket: `wss://${API}`
+    websocket: `wss://sschat-api-production.up.railway.app`
 }
