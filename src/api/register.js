@@ -1,14 +1,18 @@
+// API
 import { api } from './url';
 
+// Utils
 import { storeUserData } from '../utils/storeData';
 
+/** Register */
 export const register = async (username, email, password, onLogin) => {
+    // JSON message
     const jsonData = {
         "username": username,
         "email": email,
         "password": password,
     };
-
+    // Send data to api
     try {
         const response = await fetch(api.registerUser, {
             method: 'POST',
@@ -17,15 +21,12 @@ export const register = async (username, email, password, onLogin) => {
             },
             body: JSON.stringify(jsonData),
         });
-
-        // Always parse the response as JSON
+        // Parse response to JSON
         const data = await response.json();
-
-        // If the response is an error, return the API's JSON response
+        // If the response is an error, return
         if (!response.ok) {
             return data;
         }
-
         // Successful registration
         console.log('Registration successful', data);
         
@@ -33,15 +34,14 @@ export const register = async (username, email, password, onLogin) => {
             "username": username,
             "email": email
         };
-
+        // Store data locally
         await storeUserData(storeData);
+        // Login
         onLogin();
-
-        return data; // Return the server's success JSON response
-
+        // Return the server's success JSON response
+        return data;
     } catch (error) {
         console.error('Error during registration:', error);
-
         // Handle network or parsing errors
         return { 
             status: 'error', 

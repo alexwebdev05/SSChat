@@ -7,24 +7,27 @@ import { useEffect, useState } from 'react';
 import generalColors from '../styles/generalColors';
 import { StatusBar  } from 'expo-status-bar';
 
+// Images
+import options from '../../assets/phoneIcons/options.png'
+
 // UI
 import Header from '../ui/header';
 import { Inbox } from '../ui/inbox';
 import { ChatMaker } from '../ui/chatMaker/index'
 
 // Utils
-import { logOut } from '../api/login';
+import { logOut } from '../utils/session/logout';
 
-export default function Main() {
+export default function Main({navigation}) {
 
     const [isOptionMenuVisible, setIsOptionMenuVisible] = useState(false)
 
     // Navigation var transparent
     useEffect(() => {
-        NavigationBar.setBackgroundColorAsync(generalColors.main);
+        NavigationBar.setBackgroundColorAsync(generalColors.back);
     }, []);
 
-    // ----- Functions -----
+    // ----- Functions  --------------------------------------------------------------------------
 
     // Change menu visibility
     const showMenu = async () => {
@@ -37,18 +40,23 @@ export default function Main() {
         }
     }
 
+    // Log out
+    const handleLogOut = () => {
+        logOut()
+    }
+
     // Make menu invisible
     const returnHandler = () => {
         setIsOptionMenuVisible(false)
     }
 
-    // ----- DOM -----
+    // ----- DOM ----- ---------------------------------------------------------------------------
     return (
         <View style={style.screen}>
 
             {/* Transparent StatusBar */}
             <View>
-                <StatusBar style='dark' />
+                <StatusBar style='light' />
             </View>
             
 
@@ -57,12 +65,12 @@ export default function Main() {
 
             {/* Options */}
             <TouchableOpacity onPress={showMenu} style={style.options}>
-                <Image source={require( '../assets/icons/options.png' )} style={{width: 20, height: 20,}}/>
+                <Image source={options} style={{width: 20, height: 20,}}/>
 
                 {/* Log Out */}
                 {isOptionMenuVisible && (
                     <View style={style.optionButtons}>
-                        <TouchableOpacity onPress={logOut} style={style.logOutButton}>
+                        <TouchableOpacity onPress={handleLogOut} style={style.logOutButton}>
                             <Text style={{color: generalColors.white, fontWeight: 800}}>Log out</Text>
                         </TouchableOpacity>
                     </View>
@@ -87,16 +95,17 @@ export default function Main() {
     )
 }
 
-// ----- Styles -----
+// ----- Styles ----- ----------------------------------------------------------------------------
+
 const style = StyleSheet.create({
     screen: {
         width: '100%',
         height: '100%',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: generalColors.back
     },
     chats: {
-        width: '100%',
-        paddingHorizontal: 15,
+        width: '100%'
     },
     options: {
         position: 'absolute',
@@ -111,7 +120,7 @@ const style = StyleSheet.create({
         width: 80,
         padding: 5,
         alignItems: 'flex-end',
-        backgroundColor: generalColors.main,
+        backgroundColor: generalColors.palette1,
         borderRadius: 10,
         zIndex: 10
     },

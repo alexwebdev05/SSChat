@@ -1,0 +1,23 @@
+General:
+    ✔ Comment all code correctly @high @done(25-03-12 18:58)
+
+Websocket:
+    File: src\api\websocket\chats.js 
+    ☐ Look getChats function and modify it to use an alternative of interval @low
+
+    File: src\api\websocket\messages.js
+    ☐ Look getMessages function and modify it to use an alternative of interval @low
+
+    File: src\api\websocket\rooms.js
+    ☐ Look enterRoom function and search for an alternative of interval @low
+    ☐ Look leaveRoom function and search for an alternative of interval @low
+
+    File: src\api\websocket\handler.js
+    ☐ Look problem with 'checked-token' @critical
+
+    File: src\api\connection.js
+    ☐ Do not depend of this file @high
+
+Assets:
+    File: src\assets
+    ✔ Migrate this files to primary assets @done(25-03-12 18:58)

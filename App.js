@@ -33,24 +33,23 @@ export default function App() {
                 headerShown: false,
                 }}
             >
-            {isLoggedIn ? (
+                {isLoggedIn ? (
                 <>
-                    {/* If is logged in, show Main and Chat */}
                     <Stack.Screen name="Main" component={Main} />
                     <Stack.Screen name="Chat" component={Chat} />
                 </>
-            ) : (
+                ) : (
                 <>
-                    {/* If isn't logged ind, show Login */}
                     <Stack.Screen name="Login">
-                        {() => <Login onLogin={() => handleLogin(setIsLoggedIn)} />}
+                    {() => <Login onLogin={() => handleLogin(setIsLoggedIn)} />}
                     </Stack.Screen>
                     <Stack.Screen name="Register">
-                        {props => <Register {...props} onLogin={() => handleLogin(setIsLoggedIn)} />}
+                    {props => <Register {...props} onLogin={() => handleLogin(setIsLoggedIn)} />}
                     </Stack.Screen>
                 </>
-            )}
+                )}
             </Stack.Navigator>
         </NavigationContainer>
+
     );
 }

@@ -1,9 +1,10 @@
+// React libraries
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Save user data
 export const storeUserData = async (userData) => {
     try {
-        // Saveing data
+        // Dave data locally
         await AsyncStorage.setItem('userData', JSON.stringify(userData));
         // catch errors
     } catch (error) {

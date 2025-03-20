@@ -1,173 +1,214 @@
-// react libraries
-import { useState } from 'react';
+// React libraries
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Shadow } from 'react-native-shadow-2';
 
 // Api
-import { api } from '../../api/connection';
+import { newChat } from '../../api/websocket/chats';
 
 // Assets
-import plus from '../../assets/icons/plus.png'
+import plus from '../../../assets/phoneIcons/addChat.png'
 
+// Colors
+import generalColors from '../../styles/generalColors';
+
+/**
+ * ChatMaker Component - Allows users to create new chats
+ * @returns {JSX.Element} ChatMaker floating button and modal
+ */
 export const ChatMaker = () => {
-
+    // ----- States -------------------------------------------------------------------------
+    
+    /** Username of the chat recipient */
     const [username, setUsername] = useState('');
+    
+    /** Controls visibility of the new chat modal */
     const [isNewChatVisible, setIsNewChatVisible] = useState(false);
+    
+    /** Current user's token */
+    const [localUser, setLocalUser] = useState('');
+    
+    // ----- Effects ------------------------------------------------------------------------
 
-    // ----- Functions -----
+    /**
+     * Fetch local user data from AsyncStorage
+     */
+    useEffect(() => {
+        const localUser = async () => {
+            const userData = await AsyncStorage.getItem('userData');
+            const parsedData = JSON.parse(userData)
+            setLocalUser(parsedData.token);
+        };
+    
+        localUser();
+        
+    }, []);
+    
+    // ----- Functions ----------------------------------------------------------------------
 
-    // Show chat maker
+    /**
+     * Show chat creation modal
+     */
     const plusHandle = async () => {
         setIsNewChatVisible(true);
     }
 
-    // Make chat maker invisible
+    /**
+     * Hide chat creation modal
+     */
     const returnHandler = async () => {
         setIsNewChatVisible(false);
     }
 
-    // Chat maker function
-    const newUser = async () => {
-
-        // Get local data
-        const localData = await AsyncStorage.getItem('userData')
-        const userData = JSON.parse(localData)
-
-        // Store the chat users in an array
-        const jsonData = {
-            "user1": userData.token,
-            "user2": username
-        };
-
-        console.log(userData);
-
-        // Send array to the api
-        try {
-            const response = await fetch(api.newChat, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(jsonData),
-            });
-
-            // Bad response
-            if (!response.ok) {
-                throw new Error('The api do not respond');
-            }
-
-            // Success response
-        } catch(error) {
-            console.log('[ CLIENT ] Error settin new chat: ', error);
-            throw error
-        }
-
+    /**
+     * Create new chat with specified user
+     */
+    const newUser = () => {
+        // Create new chat
+        newChat(localUser, username)
+        
         // Make chat maker invisible
         setIsNewChatVisible(false);
-      }
+    }
 
-    // ----- DOM -----
+    // ----- DOM ----------------------------------------------------------------------------
     return(
         <View style={style.container}>
 
-            {/* Button to make chat maker visible */}
+            {/* Floating action button to create new chat */}
             <TouchableOpacity onPress={plusHandle} style={style.plusContainer}>
                 <Image source={plus} style={style.plusIcon}></Image>
             </TouchableOpacity>
 
-            {/* Chat maker */}
+            {/* Chat creation modal */}
             {isNewChatVisible && (
-            <View  style={style.newChatContainer}>
-                <Text>New Chat</Text>
-                <View style={style.inputEnter}>
-                    <TextInput
-                    placeholder="recipient username"
-                    placeholderTextColor="gray"
+                <View style={style.makerContainer}>
+                    {/* Transparent overlay to handle closing on outside click */}
+                    <TouchableOpacity onPress={returnHandler} style={style.returnHandler} />
 
-                    // Set input name
-                    onChangeText={setUsername}
-                    style={style.newChatInput}
-                    ></TextInput>
+                    {/* Modal content */}
+                    <View style={style.newChatContainer}>
+                        <Shadow
+                        startColor={generalColors.start}
+                        endColor={generalColors.finish}
+                        distance={30}
+                        >
+                            {/* Input field and button container */}
+                            <View style={style.inputEnter}>
+                                {/* Username input */}
+                                <TextInput
+                                placeholder="recipient username"
+                                placeholderTextColor="gray"
+                                onChangeText={setUsername}
+                                style={style.newChatInput}
+                                ></TextInput>
 
-                    {/* Button to finish */}
-                    <TouchableOpacity onPress={newUser} onChangeText={setUsername} style={style.newChatButton}>
-                        <Text style={style.newChatButtonText}>Start</Text>
-                    </TouchableOpacity>
+                                {/* Start chat button */}
+                                <TouchableOpacity onPress={newUser} onChangeText={setUsername} style={style.newChatButton}>
+                                    <Text style={style.newChatButtonText}>Start</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </Shadow>
+                    </View>
                 </View>
-
-                {/* Returner */}
-                <TouchableOpacity onPress={returnHandler} style={style.returnHandler} />
-            </View>
             )}
         </View>
     )
 }
 
-// ----- Style -----
+// ----- Styles -----------------------------------------------------------------------------
 const style = StyleSheet.create({
+    // Main container
     container: {
         position: 'absolute',
         width: '100%',
         height: '100%',
     },
-    // Plus button
+    
+    // Plus button styling
     plusContainer: {
         position: 'absolute',
         bottom: 40,
         right: 40,
         padding: 15,
-        borderRadius: 15,
-        backgroundColor: '#5eb1ff'
+        borderRadius: 25,
+        backgroundColor: generalColors.palette1
     },
+    
     plusIcon: {
         width: 40,
         height: 40,
     },
-    // New chat
-    newChatContainer: {
-        display: 'auto',
+
+    // Modal container
+    makerContainer: {
         position: 'absolute',
-        top: 0,
-        left: 0,
         width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(90, 177, 255, 0.5)'
+        height: '100%'
     },
+
+    // New chat form container
+    newChatContainer: {
+        position: 'absolute',
+        bottom: 50,
+        left: 40,
+        borderRadius: 15,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    
+    // Input field styling
     newChatInput: {
         height: 50,
-        marginTop: 10,
+        width: 180,
         paddingHorizontal: 20,
-        borderRadius: 15,
+        borderTopLeftRadius: 15,
+        borderBottomLeftRadius: 15,
         backgroundColor: 'white'
     },
+    
+    // Start button styling
     newChatButton: {
-        marginTop: 10,
         height: 50,
         width: 50,
-        borderRadius: 15,
-        marginLeft: 10,
+        borderTopRightRadius: 15,
+        borderBottomRightRadius: 15,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#5eb1ff'
+        backgroundColor: generalColors.palette1
     },
+    
+    // Button text styling
     newChatButtonText: {
         fontWeight: 'bold',
-        color: 'white'
+        color: generalColors.color1
     },
+    
+    // Input and button container
     inputEnter: {
+        borderRadius: 15,
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'center',
         zIndex: 2,
     },
+    
+    // Transparent overlay for closing modal
     returnHandler: {
         position: "absolute",
         top: 0,
         left: 0,
         width: "100%",
         height: "100%",
-        zIndex: 1,
-        backgroundColor: 'rgba(0,0,0,0.1)',
+        zIndex: 1
+    },
+    
+    // Shadow container
+    shadow: {
+        height: '100%',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        padding: 20,
     }
 })

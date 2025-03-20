@@ -1,19 +1,18 @@
+// API
 import { api } from './url';
 
+// Utils
 import { storeUserData } from '../utils/storeData';
 
-// ----- Exported functions ----- //
-
-// Sign in function
+/** Sign in function */
 export const signIn = async (email, password, onLogin) => {
-
+    // JSON message
     const jsonData = {
         "email": email,
         "password": password,
     };
-
+    // Send message to api
     try {
-        // Send data to api
         console.log(api.checkUsers)
         const response = await fetch(api.checkUsers, {
             method: 'POST',
@@ -22,14 +21,12 @@ export const signIn = async (email, password, onLogin) => {
             },
             body: JSON.stringify(jsonData),
         });
-
+        // Send message
         const data = await response.json();
-        
         // Bad response
         if (!response.ok) {
             throw data;
         }
-                   
         // Make an array with user data
         const storeData = {
             "username": data.username,
@@ -37,14 +34,11 @@ export const signIn = async (email, password, onLogin) => {
             "photo": data.photo,
             "token": data.token
         }
-        
         // Store data locally
         storeUserData(storeData);
-        
-        // login function on /src/App.js named handleLogin
+        // login function
         onLogin();
-        
-    // Catch erros
+    // Catch errors
     } catch (error) {
         console.error('Error during login:', error);
         return { status: 'error', message: error.message };
